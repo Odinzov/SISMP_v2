@@ -160,6 +160,7 @@ def task_dict(t: Task):
     return {
         "id": t.id,
         "name": t.name,
+        "description": t.description,
         "effort": t.effort,
         "deadline": t.deadline.isoformat() if t.deadline else None,
         "assignee": t.user_id,
@@ -179,6 +180,7 @@ def tasks():
         d = request.json
         t = Task(
             name=d["name"],
+            description=d.get("description"),
             effort=d.get("effort", 0),
             deadline=datetime.datetime.fromisoformat(d["deadline"]) if d.get("deadline") else None,
             status=d.get("status", "open"),
@@ -394,7 +396,7 @@ def update_task(tid):
         return jsonify({"msg": "forbidden"}), 403
     t = Task.query.get_or_404(tid)
     d = request.json
-    for k in ("name", "effort", "status", "priority"):
+    for k in ("name", "effort", "status", "priority", "description"):
         if k in d:
             setattr(t, k, d[k])
     if "deadline" in d:
