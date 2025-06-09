@@ -4,6 +4,7 @@ db = SQLAlchemy()
 class User(db.Model):
     id       = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+    email    = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)  # bcrypt-хэш
     role     = db.Column(db.String(10), default='student')  # student|teacher|admin
     timezone = db.Column(db.String(40), default='UTC')

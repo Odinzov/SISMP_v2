@@ -18,17 +18,22 @@ def make_token(user):
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.json
-    if User.query.filter_by(username=data['username']).first():
-        return jsonify({'msg':'user exists'}), 409
-    user = User(username=data['username'],
-                password=bcrypt.hash(data['password']))
-    db.session.add(user); db.session.commit()
+    if User.query.filter((User.username == data['username']) | (User.email == data['email'])).first():
+        return jsonify({'msg': 'user exists'}), 409
+    user = User(
+        username=data['username'],
+        email=data['email'],
+        password=bcrypt.hash(data['password'])
+    )
+    db.session.add(user)
+    db.session.commit()
     return jsonify(token=make_token(user))
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
-    user = User.query.filter_by(username=data['username']).first()
+    ident = data.get('username')
+    user = User.query.filter((User.username == ident) | (User.email == ident)).first()
     if not user or not bcrypt.verify(data['password'], user.password):
         return jsonify({'msg':'bad creds'}), 401
     return jsonify(token=make_token(user))
