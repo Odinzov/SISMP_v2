@@ -42,7 +42,7 @@ SISMP_v2/
 ## Установка
 ```bash
 # 1. Клонируем репозиторий
-git clone https://github.com/ваш-ник/SISMP_v2.git
+git clone https://github.com/Odinzov/SISMP_v2.git
 cd SISMP_v2/backend
 
 # 2. Создаём и активируем виртуальное окружение
