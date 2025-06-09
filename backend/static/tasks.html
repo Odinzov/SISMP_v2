@@ -47,12 +47,15 @@
   </main>
 
   <script src="scripts.js"></script>
+  <script src="sample_data.js"></script>
   <script>
     const API = '/api', tokenKey = 'pyToken';
     const tbody = document.querySelector('#taskTable tbody');
     function loadTasks(){
       fetch(API+'/tasks', {headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
-        .then(r=>r.json()).then(showTasks);
+        .then(r=>r.json())
+        .then(data=>{ if(!Array.isArray(data) || !data.length) data=SAMPLE_TASKS; showTasks(data); })
+        .catch(()=>showTasks(SAMPLE_TASKS));
     }
     function showTasks(list){
       tbody.innerHTML='';

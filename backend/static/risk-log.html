@@ -13,7 +13,14 @@
   <div class="dropdown">
     <i id="menuToggle" class="fas fa-list" style="font-size:2rem;cursor:pointer"></i>
     <nav id="dropdownMenu" class="dropdown-content">
+      <a href="index.html" class="dropdown-item">Главная</a>
+      <a href="dashboard.html" class="dropdown-item">Аккаунт</a>
+      <a href="tasks.html" class="dropdown-item">Задачи</a>
+      <a href="modern_calendar.html" class="dropdown-item">Календарь</a>
+      <a href="profile.html" class="dropdown-item">Профиль</a>
       <a href="tl-dashboard.html" class="dropdown-item">TL Панель</a>
+      <a href="risk-log.html" class="dropdown-item">Риски</a>
+      <a href="reports.html" class="dropdown-item">Отчёты</a>
     </nav>
   </div>
 </header>
@@ -28,20 +35,25 @@
   </section>
 </main>
 <script src="scripts.js"></script>
+<script src="sample_data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 <script>
 const API='/api', tokenKey='pyToken';
 const tbody=document.querySelector('#riskTable tbody');
 function load(){
   fetch(API+'/risk-events',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
-    .then(r=>r.json()).then(list=>{
-      tbody.innerHTML='';
-      list.forEach(e=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${e.date.split('T')[0]}</td><td>${e.task}</td><td>${e.message}</td>`;
-        tbody.appendChild(tr);
-      });
-    });
+    .then(r=>r.json())
+    .then(list=>{ if(!Array.isArray(list)||!list.length) list=SAMPLE_RISKS; show(list); })
+    .catch(()=>show(SAMPLE_RISKS));
+}
+function show(list){
+  tbody.innerHTML='';
+  list.forEach(e=>{
+    const d=e.date.split ? e.date.split('T')[0] : e.date;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${d}</td><td>${e.task}</td><td>${e.message}</td>`;
+    tbody.appendChild(tr);
+  });
 }
 if(!localStorage.getItem(tokenKey)) location.replace('login.html');
 document.addEventListener('DOMContentLoaded',load);

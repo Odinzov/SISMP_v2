@@ -86,6 +86,7 @@
   </section>
 </main>
 <script src="scripts.js"></script>
+<script src="sample_data.js"></script>
 <script>
   const API = '/api';
   const tokenKey = 'pyToken';
@@ -95,6 +96,7 @@
   const calendar = document.getElementById('calendar');
   const stats = document.getElementById('stats');
   const selected = new Set();
+  SAMPLE_SLOTS.forEach(s => selected.add(`${s.day}-${s.hour}`));
   let drag = false;
   let dragState = false;
   let view = 'week';

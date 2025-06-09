@@ -20,29 +20,7 @@
     <!-- External styles (оставил подключение к вашему styles.css) -->
     <link rel="stylesheet" href="styles.css" />
 
-    <!-- Минимальные inline‑стили для выпадающего меню -->
-    <style>
-      .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-      }
-      .dropdown-content.show {
-        display: block;
-      }
-      .dropdown-content .dropdown-item {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-      }
-      .dropdown-content .dropdown-item:hover {
-        background-color: #f1f1f1;
-      }
-    </style>
+
   </head>
   <body>
     <!-- === Header === -->
@@ -147,25 +125,16 @@
           </tbody>
         </table>
       </section>
+      <section id="demoSection" class="info-section">
+        <h2>Пример активных задач</h2>
+        <ul id="demoTasks" style="padding-left:1.2rem">
+          <li>Обновление интерфейса календаря – <b>выполняется</b></li>
+          <li>Наполнение базы примерными задачами – <b>в работе</b></li>
+          <li>Сбор пользовательской обратной связи – <b>запланировано</b></li>
+        </ul>
+      </section>
     </main>
 
-    <!-- === Minimal JS: только логика меню === -->
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const menuToggle = document.getElementById("menuToggle");
-        const dropdownMenu = document.getElementById("dropdownMenu");
-
-        menuToggle.onclick = () => dropdownMenu.classList.toggle("show");
-
-        window.onclick = (event) => {
-          if (
-            !event.target.matches("#menuToggle") &&
-            !dropdownMenu.contains(event.target)
-          ) {
-            dropdownMenu.classList.remove("show");
-          }
-        };
-      });
-    </script>
+    <script src="scripts.js"></script>
   </body>
 </html>

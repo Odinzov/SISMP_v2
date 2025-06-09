@@ -9,29 +9,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
-    <!-- dropdown styles to match index -->
-    <style>
-      .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-      }
-      .dropdown-content.show {
-        display: block;
-      }
-      .dropdown-content .dropdown-item {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-      }
-      .dropdown-content .dropdown-item:hover {
-        background-color: #f1f1f1;
-      }
-    </style>
+
   </head>
   <body>
     <!-- ===== Header ===== -->
@@ -45,6 +23,7 @@
         ></i>
         <nav id="dropdownMenu" class="dropdown-content">
           <a href="index.html" class="dropdown-item">Главная</a>
+          <a href="dashboard.html" class="dropdown-item">Аккаунт</a>
           <a href="tasks.html" class="dropdown-item">Задачи</a>
           <a href="modern_calendar.html" class="dropdown-item">Календарь</a>
           <a href="profile.html" class="dropdown-item">Профиль</a>
@@ -92,6 +71,8 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <script src="scripts.js"></script>
+    <script src="sample_data.js"></script>
     <script>
       // ===== Проверяем токен =====
       const tokenKey = "pyToken";
@@ -101,38 +82,31 @@
       document.getElementById("dashName").textContent = parsed.u;
       const currentUid = parsed.uid;
 
-      // ===== Меню =====
-      const menuToggle = document.getElementById("menuToggle");
-      const dropdownMenu = document.getElementById("dropdownMenu");
-      menuToggle.onclick = () => dropdownMenu.classList.toggle("show");
-      window.onclick = (e) => {
-        if (
-          !e.target.matches("#menuToggle") &&
-          !dropdownMenu.contains(e.target)
-        ) {
-          dropdownMenu.classList.remove("show");
-        }
-      };
+      // ===== Заполняем данные =====
 
       // ===== Заполняем данные =====
       const tbody = document.getElementById("dashBody");
       function load(){
         fetch('/api/tasks',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
-          .then(r=>r.json()).then(list=>{
-            tbody.innerHTML='';
-            const mine=list.filter(t=>t.assignee==currentUid);
-            if(!mine.length){
-              tbody.innerHTML="<tr><td colspan='4' style='padding:10px'>Нет задач</td></tr>";return;
-            }
-            mine.forEach(t=>{
-              const tr=document.createElement('tr');
-              tr.innerHTML=`<td style='padding:8px'>${t.name}</td>`+
-                `<td style='padding:8px'>${t.effort}</td>`+
-                `<td style='padding:8px'>${t.deadline?t.deadline.split('T')[0]:''}</td>`+
-                `<td style='padding:8px'>${t.status}</td>`;
-              tbody.appendChild(tr);
-            });
-          });
+          .then(r=>r.json())
+          .then(list=>{ if(!Array.isArray(list)||!list.length) list=SAMPLE_TASKS; show(list); })
+          .catch(()=>show(SAMPLE_TASKS));
+      }
+      function show(list){
+        tbody.innerHTML='';
+        const mine=list.filter(t=>t.assignee==currentUid);
+        if(!mine.length){
+          tbody.innerHTML="<tr><td colspan='4' style='padding:10px'>Нет задач</td></tr>";return;
+        }
+        mine.forEach(t=>{
+          const tr=document.createElement('tr');
+          tr.innerHTML=`<td style='padding:8px'>${t.name}</td>`+
+            `<td style='padding:8px'>${t.effort}</td>`+
+            `<td style='padding:8px'>${t.deadline?t.deadline.split('T')[0]:''}</td>`+
+            `<td style='padding:8px'>${t.status}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
       }
       load();
 
