@@ -61,5 +61,75 @@ with app.app_context():
         user_id=None,
     )
 
+    # дополнительные задания для студентов
+    # ----- задачи Алисы -----
+    create_task(
+        name="Составить план тестирования",
+        description="Определить набор тестов и критерии приёмки",
+        effort=2,
+        deadline=now + timedelta(days=5),
+        user_id=alice.id,
+    )
+    create_task(
+        name="Обновить документацию",
+        description="Актуализировать README и wiki проекта",
+        effort=3,
+        deadline=now + timedelta(days=8),
+        user_id=alice.id,
+    )
+    create_task(
+        name="Проверить отчёт о рисках",
+        description="Проанализировать новые потенциальные риски",
+        effort=1,
+        deadline=now + timedelta(days=10),
+        user_id=alice.id,
+    )
+
+    # ----- задачи Боба -----
+    create_task(
+        name="Настроить CI",
+        description="Автоматическая сборка и тесты в GitHub Actions",
+        effort=4,
+        deadline=now + timedelta(days=4),
+        user_id=bob.id,
+    )
+    create_task(
+        name="Оптимизировать запросы",
+        description="Ускорить работу API путём оптимизации SQL",
+        effort=5,
+        deadline=now + timedelta(days=9),
+        user_id=bob.id,
+    )
+    create_task(
+        name="Рефакторинг модуля авторизации",
+        description="Упростить и улучшить безопасность логина",
+        effort=3,
+        deadline=now + timedelta(days=11),
+        user_id=bob.id,
+    )
+
+    # ----- задачи Чарли -----
+    create_task(
+        name="Разработать прототип UI",
+        description="Подготовить черновые макеты интерфейса",
+        effort=5,
+        deadline=now + timedelta(days=6),
+        user_id=charlie.id,
+    )
+    create_task(
+        name="Написать unit-тесты",
+        description="Покрыть критические функции тестами",
+        effort=4,
+        deadline=now + timedelta(days=8),
+        user_id=charlie.id,
+    )
+    create_task(
+        name="Подготовить презентацию",
+        description="Слайды для демонстрации проекта",
+        effort=2,
+        deadline=now + timedelta(days=12),
+        user_id=charlie.id,
+    )
+
     db.session.commit()
     print("Demo data loaded.")
