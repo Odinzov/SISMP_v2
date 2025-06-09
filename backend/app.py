@@ -26,7 +26,9 @@ def require_auth(role=None):
             try:
                 payload = jwt.decode(hdr[1], JWT_SECRET, algorithms=['HS256'])
             except jwt.ExpiredSignatureError:
-                return jsonify({'msg':'token expired'}), 401
+                return jsonify({'msg': 'token expired'}), 401
+            except jwt.InvalidTokenError:
+                return jsonify({'msg': 'token invalid'}), 401
             if role and payload['role'] not in role.split('|'):
                 return jsonify({'msg':'forbidden'}), 403
             request.user = payload
