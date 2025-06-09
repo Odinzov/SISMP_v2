@@ -25,10 +25,12 @@
     <input id="to" type="date" style="width:100%">
     <div class="buttons" style="justify-content:center;margin-top:1rem">
       <button id="csvBtn" class="btn">Скачать CSV</button>
+      <button id="pdfBtn" class="btn" style="margin-left:0.5rem">Скачать PDF</button>
     </div>
   </section>
 </main>
 <script src="scripts.js"></script>
+<script src="jspdf.umd.min.js"></script>
 <script>
 const API='/api', tokenKey='pyToken';
 function download(){
@@ -42,9 +44,24 @@ function download(){
       a.href=u;a.download='report.csv';a.click();URL.revokeObjectURL(u);
     });
 }
+function downloadPdf(){
+  const from=document.getElementById('from').value;
+  const to=document.getElementById('to').value;
+  const url=`${API}/stats?from=${from}&to=${to}`;
+  fetch(url,{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+    .then(r=>r.json()).then(data=>{
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text('Отчёт по статусам',10,10);
+      let y=20;
+      data.forEach(s=>{ doc.text(`${s.status}: ${s.count}`,10,y); y+=10; });
+      doc.save('report.pdf');
+    });
+}
 if(!localStorage.getItem(tokenKey)) location.replace('login.html');
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('csvBtn').onclick=download;
+  document.getElementById('pdfBtn').onclick=downloadPdf;
 });
 </script>
 </body>

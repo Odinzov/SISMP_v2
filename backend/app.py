@@ -324,6 +324,19 @@ def reports():
     )
 
 
+@app.route("/api/stats")
+@require_auth(role="teacher|admin")
+def stats():
+    """Return aggregated task counts by status for the given period."""
+    q = db.session.query(Task.status, db.func.count(Task.id))
+    if "from" in request.args:
+        q = q.filter(Task.deadline >= datetime.datetime.fromisoformat(request.args["from"]))
+    if "to" in request.args:
+        q = q.filter(Task.deadline <= datetime.datetime.fromisoformat(request.args["to"]))
+    rows = q.group_by(Task.status).all()
+    return jsonify([{"status": s, "count": c} for s, c in rows])
+
+
 @app.route("/api/tasks/<int:tid>", methods=["GET", "PATCH"])
 @require_auth(role="student|teacher|admin")
 def task_detail(tid):
