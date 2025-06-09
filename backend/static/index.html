@@ -29,11 +29,7 @@
 
       <!-- Бургер‑меню -->
       <div class="dropdown">
-        <i
-          id="menuToggle"
-          class="fas fa-list"
-          style="font-size: 2rem; cursor: pointer"
-        ></i>
+        <i id="menuToggle" class="fas fa-bars menu-icon"></i>
         <nav id="dropdownMenu" class="dropdown-content">
           <a href="index.html" class="dropdown-item">Главная</a>
           <a href="dashboard.html" class="dropdown-item">Аккаунт</a>
@@ -60,70 +56,14 @@
       </section>
 
       <section id="specSection" class="info-section">
-        <h2>Функциональная спецификация</h2>
-
-        <table style="width:100%; border-collapse: collapse;">
-          <thead style="background:#f0f6ff">
-            <tr>
-              <th style="padding:8px; border:1px solid #ddd">№</th>
-              <th style="padding:8px; border:1px solid #ddd">Подсистема</th>
-              <th style="padding:8px; border:1px solid #ddd">Назначение</th>
-              <th style="padding:8px; border:1px solid #ddd">Ключевые функции</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd">1</td>
-              <td style="padding:8px; border:1px solid #ddd">Реестр трудовых заданий</td>
-              <td style="padding:8px; border:1px solid #ddd">Централизованное хранение данных о работах проекта</td>
-              <td style="padding:8px; border:1px solid #ddd">
-                • отображение атрибутов: ИД, наименование, трудоёмкость (ч),
-                дедлайн, исполнитель, статус<br />
-                • операции Create/Read/Update (удаление недоступно на этапе MVP)
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd">2</td>
-              <td style="padding:8px; border:1px solid #ddd">Механизм добровольного закрепления</td>
-              <td style="padding:8px; border:1px solid #ddd">Реализация принципа «self-assignment»</td>
-              <td style="padding:8px; border:1px solid #ddd">
-                • транзакция «Взять → закрепить» атомарно блокирует объект<br />
-                • операция «Отдать» возвращает задачу в общий пул<br />
-                • обработка коллизий блокировкой ID
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd">3</td>
-              <td style="padding:8px; border:1px solid #ddd">Календарь оперативного планирования</td>
-              <td style="padding:8px; border:1px solid #ddd">Фиксация интервалов занятости студента</td>
-              <td style="padding:8px; border:1px solid #ddd">
-                • недельная матрица 7 × N (шаг 1–2 ч)<br />
-                • добавление/удаление слота drag&amp;drop<br />
-                • хранение модели в localStorage
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd">4</td>
-              <td style="padding:8px; border:1px solid #ddd">Контур прогнозно-диагностический</td>
-              <td style="padding:8px; border:1px solid #ddd">Автоматическая оценка риска</td>
-              <td style="padding:8px; border:1px solid #ddd">
-                • расчёт остатка R = ∑ слоты – трудоёмкость<br />
-                • жёлтый индикатор, если R &lt; 0 и дедлайн &gt; 24 ч<br />
-                • красный индикатор, если текущая дата ≥ дедлайна
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd">5</td>
-              <td style="padding:8px; border:1px solid #ddd">Панель тимлида</td>
-              <td style="padding:8px; border:1px solid #ddd">Сводная визуализация статусов</td>
-              <td style="padding:8px; border:1px solid #ddd">
-                • переключатель «Student ↔ TL»<br />
-                • фильтр «показать только задачи с риском»<br />
-                • агрегированные метрики: N_жёлт, N_красн, N_всего
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <h2>Что умеет сервис</h2>
+        <ul class="feature-list">
+          <li><b>Список задач.</b> Хранит часы, дедлайны и ответственных.</li>
+          <li><b>Самостоятельное закрепление.</b> Можно взять или вернуть задачу одним кликом.</li>
+          <li><b>Личный календарь.</b> Отмечаем занятость и свободные слоты.</li>
+          <li><b>Напоминания о рисках.</b> Сервис подсветит просрочки и перегрузки.</li>
+          <li><b>Панель тимлида.</b> Общая картина статусов команды.</li>
+        </ul>
       </section>
       <section id="demoSection" class="info-section">
         <h2>Пример активных задач</h2>
