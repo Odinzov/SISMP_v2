@@ -25,11 +25,13 @@
     <p>Трудоёмкость: <span id="taskEffort"></span></p>
     <p>Дедлайн: <span id="taskDeadline"></span></p>
     <p>Приоритет: <span id="taskPriority"></span></p>
+    <p>Статус: <span id="taskStatus"></span></p>
     <p id="taskDescription"></p>
     <div style="margin:1rem 0">
       <label>Прогресс: <span id="progVal">0</span>%</label>
       <input type="range" id="progress" min="0" max="100" value="0" style="width:100%">
       <button class="btn" id="saveBtn" style="margin-top:0.5rem">Сохранить</button>
+      <button class="btn" id="doneBtn" style="margin-top:0.5rem;margin-left:0.5rem">Готово</button>
     </div>
   </section>
   <section class="info-section">
@@ -55,6 +57,7 @@ function show(d){
   document.getElementById('taskEffort').textContent=d.effort;
   document.getElementById('taskDeadline').textContent=d.deadline?d.deadline.split('T')[0]:'';
   document.getElementById('taskPriority').textContent=d.priority;
+  document.getElementById('taskStatus').textContent=d.status;
   document.getElementById('taskDescription').textContent=d.description||'';
   document.getElementById('progress').value=d.progress;
   document.getElementById('progVal').textContent=d.progress;
@@ -74,6 +77,14 @@ function saveProgress(){
     body:JSON.stringify({progress:val})
   }).then(()=>load());
 }
+
+function markDone(){
+  fetch(API+`/tasks/${taskId}`,{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem(tokenKey)},
+    body:JSON.stringify({progress:100})
+  }).then(()=>load());
+}
 function addComment(){
   const text=document.getElementById('commentText').value.trim();
   if(!text) return;
@@ -89,6 +100,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   load();
   document.getElementById('progress').oninput=e=>document.getElementById('progVal').textContent=e.target.value;
   document.getElementById('saveBtn').onclick=saveProgress;
+  document.getElementById('doneBtn').onclick=markDone;
   document.getElementById('commentBtn').onclick=addComment;
 });
 </script>
