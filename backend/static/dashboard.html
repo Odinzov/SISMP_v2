@@ -46,7 +46,7 @@
         <nav id="dropdownMenu" class="dropdown-content">
           <a href="index.html" class="dropdown-item">Главная</a>
           <a href="tasks.html" class="dropdown-item">Задачи</a>
-          <a href="schedule.html" class="dropdown-item">Календарь</a>
+          <a href="modern_calendar.html" class="dropdown-item">Календарь</a>
           <a href="profile.html" class="dropdown-item">Профиль</a>
           <a href="tl-dashboard.html" class="dropdown-item">TL Панель</a>
           <a href="risk-log.html" class="dropdown-item">Риски</a>
@@ -91,6 +91,7 @@
       </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script>
       // ===== Проверяем токен =====
       const tokenKey = "pyToken";
@@ -144,6 +145,5 @@
       const logout2 = document.getElementById("logoutBtn2");
       if (logout2) logout2.onclick = doLogout;
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4/build/cjs/index.js"></script>
   </body>
 </html>
