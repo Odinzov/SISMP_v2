@@ -27,7 +27,14 @@
 
 <main class="main">
   <section class="info-section">
-    <h2>Мои слоты занятости</h2>
+  <h2>Мои слоты занятости</h2>
+  <div style="text-align:right;margin-bottom:0.5rem">
+    <label for="viewMode">Вид:</label>
+    <select id="viewMode">
+      <option value="week">Неделя</option>
+      <option value="month">Месяц</option>
+    </select>
+  </div>
     <table style="border-collapse:collapse;width:100%" id="calTable"></table>
     <div class="buttons" style="justify-content:center;margin-top:1rem">
       <button class="btn" id="saveBtn">Сохранить</button>
@@ -44,44 +51,76 @@ const table=document.getElementById('calTable');
 const info=document.createElement('div');
 info.style.marginTop='1rem';
 document.querySelector('.info-section').appendChild(info);
+let view='week';
+let currentSlots={};
 
-function render(data={}){
+function renderWeek(data={}){
   table.innerHTML='<tr><th></th>'+hours.map(h=>`<th>${h}</th>`).join('')+'</tr>';
   days.forEach((d,i)=>{
     const tr=document.createElement('tr');
     let cells=`<td style="padding:6px">${d}</td>`;
     hours.forEach(h=>{
-      const id=`${i}-${h}`;
       const checked=data[`${i}-${h}`]? 'checked':'';
-      cells+=`<td style="padding:6px;text-align:center"><input type="checkbox" id="${id}" ${checked}></td>`;
+      cells+=`<td style="padding:6px;text-align:center"><input type="checkbox" data-day="${i}" data-hour="${h}" ${checked}></td>`;
     });
     tr.innerHTML=cells;
     table.appendChild(tr);
   });
 }
 
+function renderMonth(data={}){
+  table.innerHTML='<tr><th></th>'+hours.map(h=>`<th>${h}</th>`).join('')+'</tr>';
+  for(let w=0; w<4; w++){
+    days.forEach((d,i)=>{
+      const tr=document.createElement('tr');
+      let cells=`<td style="padding:6px">${d} ${w+1}</td>`;
+      hours.forEach(h=>{
+        const checked=data[`${i}-${h}`]? 'checked':'';
+        cells+=`<td style="padding:6px;text-align:center"><input type="checkbox" data-day="${i}" data-hour="${h}" ${checked}></td>`;
+      });
+      tr.innerHTML=cells;
+      table.appendChild(tr);
+    });
+  }
+}
+
+function render(data={}){
+  if(view==='month') renderMonth(data); else renderWeek(data);
+}
+
 function load(){
   fetch(API+'/slots',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
     .then(r=>r.json())
     .then(list=>{
-      const data={};
-      list.forEach(s=>data[`${s.day}-${s.hour}`]=1);
-      render(data);
+      currentSlots={};
+      list.forEach(s=>currentSlots[`${s.day}-${s.hour}`]=1);
+      render(currentSlots);
       updateStats();
     });
 }
 
 function save(){
   const slots=[];
-  days.forEach((_,i)=>hours.forEach(h=>{
-    if(document.getElementById(`${i}-${h}`).checked) slots.push({day:i,hour:h});
-  }));
+  const seen=new Set();
+  table.querySelectorAll('input[data-day]').forEach(inp=>{
+    if(inp.checked){
+      const key=`${inp.dataset.day}-${inp.dataset.hour}`;
+      if(!seen.has(key)){
+        slots.push({day:+inp.dataset.day,hour:+inp.dataset.hour});
+        seen.add(key);
+      }
+    }
+  });
   fetch(API+'/slots',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem(tokenKey)},body:JSON.stringify({slots})})
     .then(r=>{if(!r.ok) return alert('Ошибка сохранения'); updateStats();});
 }
 
 function updateStats(){
-  const checked=document.querySelectorAll('#calTable input:checked').length;
+  const unique=new Set();
+  table.querySelectorAll('input[data-day]:checked').forEach(i=>{
+    unique.add(`${i.dataset.day}-${i.dataset.hour}`);
+  });
+  const checked=unique.size;
   fetch(API+'/tasks',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
     .then(r=>r.json())
     .then(list=>{
@@ -92,7 +131,43 @@ function updateStats(){
 }
 
 document.getElementById('saveBtn').onclick=save;
-document.addEventListener('DOMContentLoaded',load);
+document.addEventListener('DOMContentLoaded',()=>{
+  load();
+  document.getElementById('viewMode').addEventListener('change',e=>{
+    view=e.target.value;
+    render(currentSlots);
+    updateStats();
+  });
+});
+
+let drag=false, dragState=false;
+table.addEventListener('mousedown',e=>{
+  if(e.target.matches('input[type="checkbox"]')){
+    drag=true;
+    dragState=!e.target.checked;
+    toggleBox(e.target, dragState);
+    e.preventDefault();
+  }
+});
+table.addEventListener('mouseover',e=>{
+  if(drag && e.target.matches('input[type="checkbox"]')){
+    toggleBox(e.target, dragState);
+  }
+});
+document.addEventListener('mouseup',()=>{if(drag){drag=false;updateStats();}});
+table.addEventListener('change',e=>{
+  if(e.target.matches('input[type="checkbox"]')){
+    toggleBox(e.target, e.target.checked);
+    updateStats();
+  }
+});
+
+function toggleBox(el,val){
+  el.checked=val;
+  const d=el.dataset.day, h=el.dataset.hour;
+  table.querySelectorAll(`input[data-day="${d}"][data-hour="${h}"]`).forEach(i=>i.checked=val);
+  if(val) currentSlots[`${d}-${h}`]=1; else delete currentSlots[`${d}-${h}`];
+}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4/build/cjs/index.js"></script>
 </body>
