@@ -1,7 +1,7 @@
 import datetime, functools, jwt, os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from models import db, Result, User
+from models import db, Result, User, Task
 from auth import auth_bp
 
 app = Flask(__name__)
@@ -59,6 +59,69 @@ def all_results():
     return jsonify([{'user':u,'slug':r.slug,'score':r.score,
                      'total':r.total,'date':r.passed_at.isoformat()}
                      for r,u in rows])
+
+
+def task_dict(t):
+    return {
+        'id': t.id,
+        'name': t.name,
+        'effort': t.effort,
+        'deadline': t.deadline.isoformat() if t.deadline else None,
+        'assignee': t.user_id,
+        'status': t.status
+    }
+
+
+@app.route('/api/tasks', methods=['GET', 'POST'])
+@require_auth()
+def tasks():
+    if request.method == 'POST':
+        d = request.json
+        t = Task(name=d['name'], effort=d.get('effort', 0),
+                 deadline=datetime.datetime.fromisoformat(d['deadline']) if d.get('deadline') else None,
+                 status=d.get('status', 'open'))
+        db.session.add(t); db.session.commit()
+        return jsonify(task_dict(t)), 201
+    rows = Task.query.all()
+    return jsonify([task_dict(t) for t in rows])
+
+
+@app.route('/api/tasks/<int:tid>', methods=['PUT'])
+@require_auth()
+def update_task(tid):
+    t = Task.query.get_or_404(tid)
+    d = request.json
+    for k in ['name', 'effort', 'status']:
+        if k in d:
+            setattr(t, k, d[k])
+    if 'deadline' in d:
+        t.deadline = datetime.datetime.fromisoformat(d['deadline']) if d['deadline'] else None
+    db.session.commit()
+    return '', 204
+
+
+@app.route('/api/tasks/<int:tid>/claim', methods=['POST'])
+@require_auth()
+def claim_task(tid):
+    t = Task.query.get_or_404(tid)
+    if t.user_id:
+        return jsonify({'msg': 'taken'}), 409
+    t.user_id = request.user['uid']
+    t.status = 'in_progress'
+    db.session.commit()
+    return '', 204
+
+
+@app.route('/api/tasks/<int:tid>/release', methods=['POST'])
+@require_auth()
+def release_task(tid):
+    t = Task.query.get_or_404(tid)
+    if t.user_id != request.user['uid']:
+        return jsonify({'msg': 'not yours'}), 403
+    t.user_id = None
+    t.status = 'open'
+    db.session.commit()
+    return '', 204
 
 if __name__ == '__main__':
     app.run(debug=True)
