@@ -570,20 +570,6 @@ def release_task(tid):
     return "", 204
 
 
-@app.route("/api/tasks/<int:tid>/comment", methods=["POST"])
-@require_auth(role="student|teacher|admin")
-def add_comment(tid):
-    t = Task.query.get_or_404(tid)
-    d = request.json
-    c = Comment(
-        task_id=tid,
-        user_id=request.user["uid"],
-        text=d.get("text", ""),
-        created_at=datetime.datetime.utcnow(),
-    )
-    db.session.add(c)
-    db.session.commit()
-    return "", 201
 
 
 @app.route("/api/tasks/<int:tid>/comment", methods=["POST"])
