@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Отчёты</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header class="header">
+  <span class="header-text">Отчёты</span>
+  <div class="dropdown">
+    <i id="menuToggle" class="fas fa-list" style="font-size:2rem;cursor:pointer"></i>
+    <nav id="dropdownMenu" class="dropdown-content">
+      <a href="tl-dashboard.html" class="dropdown-item">TL Панель</a>
+    </nav>
+  </div>
+</header>
+<main class="main">
+  <section class="info-section" style="max-width:400px;margin:auto">
+    <label>С</label>
+    <input id="from" type="date" style="width:100%">
+    <label>По</label>
+    <input id="to" type="date" style="width:100%">
+    <div class="buttons" style="justify-content:center;margin-top:1rem">
+      <button id="csvBtn" class="btn">Скачать CSV</button>
+    </div>
+  </section>
+</main>
+<script src="scripts.js"></script>
+<script>
+const API='/api', tokenKey='pyToken';
+function download(){
+  const from=document.getElementById('from').value;
+  const to=document.getElementById('to').value;
+  const url=`${API}/reports?from=${from}&to=${to}`;
+  fetch(url,{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+    .then(r=>r.blob()).then(b=>{
+      const u=URL.createObjectURL(b);
+      const a=document.createElement('a');
+      a.href=u;a.download='report.csv';a.click();URL.revokeObjectURL(u);
+    });
+}
+if(!localStorage.getItem(tokenKey)) location.replace('login.html');
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('csvBtn').onclick=download;
+});
+</script>
+</body>
+</html>
