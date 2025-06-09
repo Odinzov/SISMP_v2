@@ -37,36 +37,63 @@
 
 <script src="scripts.js"></script>
 <script>
+const API='/api', tokenKey='pyToken';
 const days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const hours=[9,10,11,12,13,14,15,16];
-const key='slots';
 const table=document.getElementById('calTable');
-function render(){
+const info=document.createElement('div');
+info.style.marginTop='1rem';
+document.querySelector('.info-section').appendChild(info);
+
+function render(data={}){
   table.innerHTML='<tr><th></th>'+hours.map(h=>`<th>${h}</th>`).join('')+'</tr>';
-  const data=JSON.parse(localStorage.getItem(key)||'{}');
   days.forEach((d,i)=>{
     const tr=document.createElement('tr');
     let cells=`<td style="padding:6px">${d}</td>`;
     hours.forEach(h=>{
       const id=`${i}-${h}`;
-      const checked=data[id]? 'checked':'';
+      const checked=data[`${i}-${h}`]? 'checked':'';
       cells+=`<td style="padding:6px;text-align:center"><input type="checkbox" id="${id}" ${checked}></td>`;
     });
     tr.innerHTML=cells;
     table.appendChild(tr);
   });
 }
-function save(){
-  const data={};
-  days.forEach((_,i)=>hours.forEach(h=>{
-    const id=`${i}-${h}`;
-    if(document.getElementById(id).checked) data[id]=1;
-  }));
-  localStorage.setItem(key,JSON.stringify(data));
-  alert('Сохранено');
+
+function load(){
+  fetch(API+'/slots',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+    .then(r=>r.json())
+    .then(list=>{
+      const data={};
+      list.forEach(s=>data[`${s.day}-${s.hour}`]=1);
+      render(data);
+      updateStats();
+    });
 }
+
+function save(){
+  const slots=[];
+  days.forEach((_,i)=>hours.forEach(h=>{
+    if(document.getElementById(`${i}-${h}`).checked) slots.push({day:i,hour:h});
+  }));
+  fetch(API+'/slots',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem(tokenKey)},body:JSON.stringify({slots})})
+    .then(r=>{if(!r.ok) return alert('Ошибка сохранения'); updateStats();});
+}
+
+function updateStats(){
+  const checked=document.querySelectorAll('#calTable input:checked').length;
+  fetch(API+'/tasks',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+    .then(r=>r.json())
+    .then(list=>{
+      const uid=jwt_decode(localStorage.getItem(tokenKey)).uid;
+      const hoursPlanned=list.filter(t=>t.assignee===uid).reduce((sum,t)=>sum+(t.effort||0),0);
+      info.textContent=`Доступно часов: ${checked}, Запланировано: ${hoursPlanned}`;
+    });
+}
+
 document.getElementById('saveBtn').onclick=save;
-document.addEventListener('DOMContentLoaded',render);
+document.addEventListener('DOMContentLoaded',load);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@4/build/cjs/index.js"></script>
 </body>
 </html>
