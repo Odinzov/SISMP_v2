@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+function initMenu() {
   const menuToggle = document.getElementById("menuToggle");
   const dropdownMenu = document.getElementById("dropdownMenu");
   if (menuToggle && dropdownMenu) {
@@ -26,4 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
-});
+}
+
+if (document.readyState !== "loading") {
+  initMenu();
+} else {
+  document.addEventListener("DOMContentLoaded", initMenu);
+}
