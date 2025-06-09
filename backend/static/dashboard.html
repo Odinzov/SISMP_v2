@@ -33,26 +33,17 @@
 
     <!-- ===== Main ===== -->
     <main class="main">
-      <section
-        class="info-section"
-        style="
-          max-width: 560px;
-          width: 100%;
-          margin: auto;
-          padding: 1.75rem 1.5rem 2rem;
-          box-sizing: border-box;
-        "
-      >
-        <h2 style="text-align: center; margin-bottom: 1.4rem">
+      <section class="info-section wide">
+        <h2 class="text-center" style="margin-bottom: 1.4rem">
           Рабочий стол: <span id="dashName"></span>
         </h2>
-        <table style="width: 100%; border-collapse: collapse" id="taskTable">
+        <table class="table" id="taskTable">
           <thead style="background: #f0f6ff">
             <tr>
-              <th style="padding: 10px">Задача</th>
-              <th style="padding: 10px">Часы</th>
-              <th style="padding: 10px">Дедлайн</th>
-              <th style="padding: 10px">Статус</th>
+              <th>Задача</th>
+              <th>Часы</th>
+              <th>Дедлайн</th>
+              <th>Статус</th>
             </tr>
           </thead>
           <tbody id="dashBody"></tbody>
