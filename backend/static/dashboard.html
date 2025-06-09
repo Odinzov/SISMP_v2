@@ -87,7 +87,7 @@
         }
         mine.forEach(t=>{
           const tr=document.createElement('tr');
-          tr.innerHTML=`<td style='padding:8px'>${t.name}</td>`+
+          tr.innerHTML=`<td style='padding:8px'><a href="task.html?id=${t.id}">${t.name}</a></td>`+
             `<td style='padding:8px'>${t.effort}</td>`+
             `<td style='padding:8px'>${t.deadline?t.deadline.split('T')[0]:''}</td>`+
             `<td style='padding:8px'>${t.status}</td>`;
