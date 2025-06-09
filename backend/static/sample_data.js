@@ -1,8 +1,9 @@
 // Простые заглушки для демонстрации работы интерфейса
 const SAMPLE_TASKS = [
-  {id: 1, name: 'Обновление календаря', effort: 4, deadline: '2025-06-20', assignee: 'alice', status: 'в процессе', progress: 40, priority: 'A'},
-  {id: 2, name: 'Написать отчёт', effort: 2, deadline: '2025-06-18', assignee: 'bob', status: 'выполнено', progress: 100, priority: 'B'},
-  {id: 3, name: 'Обсудить требования', effort: 1, deadline: '2025-06-22', assignee: '', status: 'открыта', progress: 0, priority: 'C'}
+  // "assignee" uses numeric identifiers to mirror real API data
+  {id: 1, name: 'Обновление календаря', effort: 4, deadline: '2025-06-20', assignee: 2, status: 'в процессе', progress: 40, priority: 'A'}, // alice
+  {id: 2, name: 'Написать отчёт', effort: 2, deadline: '2025-06-18', assignee: 3, status: 'выполнено', progress: 100, priority: 'B'}, // bob
+  {id: 3, name: 'Обсудить требования', effort: 1, deadline: '2025-06-22', assignee: null, status: 'открыта', progress: 0, priority: 'C'}
 ];
 
 const SAMPLE_RISKS = [
