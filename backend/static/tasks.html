@@ -17,6 +17,7 @@
         <a href="account.html" class="dropdown-item">Аккаунт</a>
         <a href="tasks.html" class="dropdown-item">Задачи</a>
         <a href="schedule.html" class="dropdown-item">Календарь</a>
+        <a href="profile.html" class="dropdown-item">Профиль</a>
       </nav>
     </div>
   </header>
@@ -61,6 +62,7 @@
           `<td style='padding:8px;border:1px solid #ddd'>${t.assignee||''}</td>`+
           `<td style='padding:8px;border:1px solid #ddd'>${t.status}</td>`+
           `<td style='padding:8px;border:1px solid #ddd'>`+
+          `<a href="task.html?id=${t.id}" class='btn' style='margin-right:4px'>Подробнее</a>`+
           (t.assignee? (t.assignee==currentUser?`<button onclick="release(${t.id})" class='btn'>Отдать</button>`:'') : `<button onclick="claim(${t.id})" class='btn'>Взять</button>`)+`</td>`;
         tbody.appendChild(tr);
       });

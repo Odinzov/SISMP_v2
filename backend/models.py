@@ -6,6 +6,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)  # bcrypt-хэш
     role     = db.Column(db.String(10), default='student')  # student|teacher|admin
+    timezone = db.Column(db.String(40), default='UTC')
 
 class Result(db.Model):
     id        = db.Column(db.Integer, primary_key=True)
@@ -23,3 +24,13 @@ class Task(db.Model):
     deadline = db.Column(db.DateTime)
     user_id  = db.Column(db.Integer, db.ForeignKey('user.id'))
     status   = db.Column(db.String(20), default='open')  # open|in_progress|done
+    progress = db.Column(db.Integer, default=0)  # percent complete
+
+
+class Comment(db.Model):
+    id        = db.Column(db.Integer, primary_key=True)
+    task_id   = db.Column(db.Integer, db.ForeignKey('task.id'))
+    user_id   = db.Column(db.Integer, db.ForeignKey('user.id'))
+    text      = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime)
+
