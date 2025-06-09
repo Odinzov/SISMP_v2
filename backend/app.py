@@ -1,10 +1,12 @@
 import datetime
 import functools
 import os
+import csv
+import io
 from pathlib import Path
 
 import jwt  # PyJWT
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 
 from auth import auth_bp
@@ -156,6 +158,34 @@ def tasks():
     # GET: list tasks
     rows = Task.query.all()
     return jsonify([task_dict(t) for t in rows])
+
+
+@app.route("/api/tasks/export")
+@require_auth(role="student|teacher|admin")
+def export_tasks():
+    """Return all tasks as a CSV file."""
+    rows = Task.query.all()
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["id", "name", "effort", "deadline", "assignee", "status"])
+    for t in rows:
+        writer.writerow(
+            [
+                t.id,
+                t.name,
+                t.effort,
+                t.deadline.isoformat() if t.deadline else "",
+                t.user_id or "",
+                t.status,
+            ]
+        )
+    return Response(
+        buf.getvalue(),
+        headers={
+            "Content-Type": "text/csv",
+            "Content-Disposition": "attachment; filename=tasks.csv",
+        },
+    )
 
 
 @app.route("/api/tasks/<int:tid>", methods=["PUT"])
