@@ -25,19 +25,19 @@
   </div>
 </header>
 <main class="main">
-  <section class="info-section" style="max-width:400px;margin:auto">
+  <section class="info-section narrow">
     <h2>Настройки</h2>
     <label>Имя пользователя</label>
-    <input id="username" type="text" style="width:100%;padding:0.5rem;margin:0.3rem 0 1rem">
+    <input id="username" type="text" class="form-input">
     <label>Email</label>
-    <input id="email" type="email" readonly style="width:100%;padding:0.5rem;margin:0.3rem 0 1rem;background:#eee">
+    <input id="email" type="email" readonly class="form-input" style="background:#eee">
     <label>Роль</label>
-    <input id="role" type="text" readonly style="width:100%;padding:0.5rem;margin:0.3rem 0 1rem;background:#eee">
+    <input id="role" type="text" readonly class="form-input" style="background:#eee">
     <label>Часовой пояс</label>
-    <input id="tz" type="text" style="width:100%;padding:0.5rem;margin:0.3rem 0 1rem" placeholder="UTC">
-    <div class="buttons" style="justify-content:center">
+    <input id="tz" type="text" class="form-input" placeholder="UTC">
+    <div class="buttons center">
       <button class="btn" id="save">Сохранить</button>
-      <button class="btn" id="logout" style="background:#d9534f;margin-left:0.5rem">Выйти</button>
+      <button class="btn btn-danger" id="logout" style="margin-left:0.5rem">Выйти</button>
     </div>
   </section>
 </main>

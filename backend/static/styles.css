@@ -10,12 +10,14 @@
   --incorrect-color: #f44336;
   --light-correct-color: #d1fae5;
   --light-incorrect-color: #fce4e4;
+  --font-family: "Inter", "Mulish", sans-serif;
 }
 
 body {
   background-color: var(--background-color);
   margin: 0;
-  font-family: "Mulish", sans-serif;
+  font-family: var(--font-family);
+  color-scheme: light dark;
   color: var(--text-color);
 }
 
@@ -284,4 +286,63 @@ h3 {
 
 .feature-list li {
   margin-bottom: 0.5rem;
+}
+
+/* Utility classes for layout */
+.info-section.narrow {
+  max-width: 420px;
+  width: 100%;
+  margin: auto;
+  padding: 1.75rem 1.5rem 2rem;
+  box-sizing: border-box;
+}
+
+.info-section.wide {
+  max-width: 560px;
+  width: 100%;
+  margin: auto;
+  padding: 1.75rem 1.5rem 2rem;
+  box-sizing: border-box;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 0.3rem 0 1rem;
+  box-sizing: border-box;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+}
+
+.buttons.center {
+  justify-content: center;
+}
+
+.mb-1 {
+  margin-bottom: 1rem;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.btn-danger {
+  background-color: #d9534f;
+}
+
+.btn-danger:hover {
+  background-color: #c9302c;
+}
+
+.text-center {
+  text-align: center;
 }

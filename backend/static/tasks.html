@@ -28,17 +28,17 @@
   <main class="main">
     <section class="info-section">
       <h2>Список задач</h2>
-      <button id="exportBtn" class="btn" style="margin-bottom:1rem">Экспорт CSV</button>
-      <table style="width:100%;border-collapse:collapse" id="taskTable">
+      <button id="exportBtn" class="btn mb-1">Экспорт CSV</button>
+      <table class="table" id="taskTable">
         <thead style="background:#f0f6ff">
           <tr>
-            <th style="padding:8px;border:1px solid #ddd">ИД</th>
-            <th style="padding:8px;border:1px solid #ddd">Наименование</th>
-            <th style="padding:8px;border:1px solid #ddd">Трудоёмкость</th>
-            <th style="padding:8px;border:1px solid #ddd">Дедлайн</th>
-            <th style="padding:8px;border:1px solid #ddd">Исполнитель</th>
-            <th style="padding:8px;border:1px solid #ddd">Статус</th>
-            <th style="padding:8px;border:1px solid #ddd"></th>
+            <th>ИД</th>
+            <th>Наименование</th>
+            <th>Трудоёмкость</th>
+            <th>Дедлайн</th>
+            <th>Исполнитель</th>
+            <th>Статус</th>
+            <th></th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -61,13 +61,13 @@
       tbody.innerHTML='';
       list.forEach(t=>{
         const tr=document.createElement('tr');
-        tr.innerHTML=`<td style='padding:8px;border:1px solid #ddd'>${t.id}</td>`+
-          `<td style='padding:8px;border:1px solid #ddd'>${t.name}</td>`+
-          `<td style='padding:8px;border:1px solid #ddd'>${t.effort}</td>`+
-          `<td style='padding:8px;border:1px solid #ddd'>${t.deadline?t.deadline.split('T')[0]:''}</td>`+
-          `<td style='padding:8px;border:1px solid #ddd'>${t.assignee||''}</td>`+
-          `<td style='padding:8px;border:1px solid #ddd'>${t.status}</td>`+
-          `<td style='padding:8px;border:1px solid #ddd'>`+
+        tr.innerHTML=`<td>${t.id}</td>`+
+          `<td>${t.name}</td>`+
+          `<td>${t.effort}</td>`+
+          `<td>${t.deadline?t.deadline.split('T')[0]:''}</td>`+
+          `<td>${t.assignee||''}</td>`+
+          `<td>${t.status}</td>`+
+          `<td>`+
           `<a href="task.html?id=${t.id}" class='btn' style='margin-right:4px'>Подробнее</a>`+
           (t.assignee? (t.assignee==currentUser?`<button onclick="release(${t.id})" class='btn'>Отдать</button>`:'') : `<button onclick="claim(${t.id})" class='btn'>Взять</button>`)+`</td>`;
         tbody.appendChild(tr);

@@ -39,24 +39,12 @@
 
     <!-- ===== Main ===== -->
     <main class="main">
-      <section
-        class="info-section"
-        style="
-          max-width: 420px;
-          width: 100%;
-          margin: auto;
-          padding: 1.75rem 1.5rem 2rem;
-          box-sizing: border-box;
-        "
-      >
-        <h2 style="text-align: center; margin-bottom: 1.3rem">
+      <section class="info-section narrow">
+        <h2 class="text-center" style="margin-bottom: 1.3rem">
           Добро пожаловать в сервис!
         </h2>
         <!-- Вкладки -->
-        <div
-          class="buttons"
-          style="justify-content: center; gap: 0.8rem; margin-bottom: 1.6rem"
-        >
+        <div class="buttons center gap-1" style="margin-bottom: 1.6rem">
           <button id="loginTab" class="btn" style="min-width: 120px">
             Вход
           </button>
@@ -76,26 +64,16 @@
             id="loginUser"
             type="text"
             placeholder="Введите логин или email"
-            style="
-              width: 100%;
-              padding: 0.6rem;
-              margin: 0.3rem 0 1rem;
-              box-sizing: border-box;
-            "
+            class="form-input"
           />
           <label>Пароль</label>
           <input
             id="loginPass"
             type="password"
             placeholder="Введите пароль"
-            style="
-              width: 100%;
-              padding: 0.6rem;
-              margin: 0.3rem 0 1.2rem;
-              box-sizing: border-box;
-            "
+            class="form-input"
           />
-          <div class="buttons" style="justify-content: center">
+          <div class="buttons center">
             <button type="button" class="btn" id="loginBtn">Войти</button>
           </div>
         </form>
@@ -107,38 +85,23 @@
             id="regUser"
             type="text"
             placeholder="Придумайте логин"
-            style="
-              width: 100%;
-              padding: 0.6rem;
-              margin: 0.3rem 0 1rem;
-              box-sizing: border-box;
-            "
+            class="form-input"
           />
           <label>Email</label>
           <input
             id="regEmail"
             type="email"
             placeholder="Введите email"
-            style="
-              width: 100%;
-              padding: 0.6rem;
-              margin: 0.3rem 0 1rem;
-              box-sizing: border-box;
-            "
+            class="form-input"
           />
           <label>Пароль</label>
           <input
             id="regPass"
             type="password"
             placeholder="Придумайте пароль"
-            style="
-              width: 100%;
-              padding: 0.6rem;
-              margin: 0.3rem 0 1.2rem;
-              box-sizing: border-box;
-            "
+            class="form-input"
           />
-          <div class="buttons" style="justify-content: center">
+          <div class="buttons center">
             <button type="button" class="btn" id="regBtn">
               Зарегистрироваться
             </button>
