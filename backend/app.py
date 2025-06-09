@@ -10,7 +10,7 @@ from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 
 from auth import auth_bp
-from models import Task, Result, User, Comment, db
+from models import Task, Result, User, Comment, RiskEvent, db
 
 # ── Flask set‑up ────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent
@@ -139,6 +139,21 @@ def profile():
     db.session.commit()
     return "", 204
 
+
+@app.route("/api/profile", methods=["GET", "PATCH"])
+@require_auth()
+def profile():
+    u = User.query.get_or_404(request.user["uid"])
+    if request.method == "GET":
+        return jsonify({"id": u.id, "username": u.username, "timezone": u.timezone})
+    data = request.json
+    if "timezone" in data:
+        u.timezone = data["timezone"]
+    if "username" in data:
+        u.username = data["username"]
+    db.session.commit()
+    return "", 204
+
 # ── API: tasks ──────────────────────────────────────────────────────────────────
 
 def task_dict(t: Task):
@@ -150,6 +165,7 @@ def task_dict(t: Task):
         "assignee": t.user_id,
         "status": t.status,
         "progress": t.progress,
+        "priority": t.priority,
     }
 
 
@@ -166,6 +182,7 @@ def tasks():
             effort=d.get("effort", 0),
             deadline=datetime.datetime.fromisoformat(d["deadline"]) if d.get("deadline") else None,
             status=d.get("status", "open"),
+            priority=d.get("priority", "normal"),
         )
         db.session.add(t)
         db.session.commit()
@@ -174,6 +191,137 @@ def tasks():
     # GET: list tasks
     rows = Task.query.all()
     return jsonify([task_dict(t) for t in rows])
+
+
+@app.route("/api/tasks/<int:tid>", methods=["GET", "PATCH"])
+@require_auth(role="student|teacher|admin")
+def task_detail(tid):
+    t = Task.query.get_or_404(tid)
+    if request.method == "GET":
+        comments = Comment.query.filter_by(task_id=tid).all()
+        return jsonify(
+            {
+                **task_dict(t),
+                "comments": [
+                    {
+                        "user": c.user_id,
+                        "text": c.text,
+                        "date": c.created_at.isoformat(),
+                    }
+                    for c in comments
+                ],
+            }
+        )
+
+    # PATCH
+    d = request.json
+    if "progress" in d:
+        if request.user["uid"] != t.user_id and request.user["role"] not in (
+            "teacher",
+            "admin",
+        ):
+            return jsonify({"msg": "forbidden"}), 403
+        t.progress = int(d["progress"])
+        if t.progress >= 100:
+            t.status = "pending_review"
+        now = datetime.datetime.utcnow()
+        if t.deadline and t.progress < 100 and t.deadline < now:
+            db.session.add(
+                RiskEvent(
+                    task_id=tid,
+                    message="Просрочка",
+                    created_at=now,
+                )
+            )
+        elif t.deadline and t.progress < 50 and (t.deadline - now).days <= 2:
+            db.session.add(
+                RiskEvent(
+                    task_id=tid,
+                    message="Риск задержки",
+                    created_at=now,
+                )
+            )
+    db.session.commit()
+    return "", 204
+
+
+@app.route("/api/tasks/export")
+@require_auth(role="student|teacher|admin")
+def export_tasks():
+    """Return all tasks as a CSV file."""
+    rows = Task.query.all()
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["id", "name", "effort", "deadline", "assignee", "status", "priority"])
+    for t in rows:
+        writer.writerow(
+            [
+                t.id,
+                t.name,
+                t.effort,
+                t.deadline.isoformat() if t.deadline else "",
+                t.user_id or "",
+                t.status,
+                t.priority,
+            ]
+        )
+    return Response(
+        buf.getvalue(),
+        headers={
+            "Content-Type": "text/csv",
+            "Content-Disposition": "attachment; filename=tasks.csv",
+        },
+    )
+
+
+@app.route("/api/risk-events")
+@require_auth(role="teacher|admin")
+def risk_events():
+    rows = RiskEvent.query.order_by(RiskEvent.created_at.desc()).all()
+    return jsonify(
+        [
+            {
+                "id": r.id,
+                "task": r.task_id,
+                "message": r.message,
+                "date": r.created_at.isoformat(),
+            }
+            for r in rows
+        ]
+    )
+
+
+@app.route("/api/reports")
+@require_auth(role="teacher|admin")
+def reports():
+    q = Task.query
+    if "from" in request.args:
+        q = q.filter(Task.deadline >= datetime.datetime.fromisoformat(request.args["from"]))
+    if "to" in request.args:
+        q = q.filter(Task.deadline <= datetime.datetime.fromisoformat(request.args["to"]))
+    rows = q.all()
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["id", "name", "effort", "deadline", "assignee", "status", "priority"])
+    for t in rows:
+        writer.writerow(
+            [
+                t.id,
+                t.name,
+                t.effort,
+                t.deadline.isoformat() if t.deadline else "",
+                t.user_id or "",
+                t.status,
+                t.priority,
+            ]
+        )
+    return Response(
+        buf.getvalue(),
+        headers={
+            "Content-Type": "text/csv",
+            "Content-Disposition": "attachment; filename=report.csv",
+        },
+    )
 
 
 @app.route("/api/tasks/<int:tid>", methods=["GET", "PATCH"])
@@ -246,7 +394,7 @@ def update_task(tid):
         return jsonify({"msg": "forbidden"}), 403
     t = Task.query.get_or_404(tid)
     d = request.json
-    for k in ("name", "effort", "status"):
+    for k in ("name", "effort", "status", "priority"):
         if k in d:
             setattr(t, k, d[k])
     if "deadline" in d:
@@ -279,6 +427,22 @@ def release_task(tid):
     t.status = "open"
     db.session.commit()
     return "", 204
+
+
+@app.route("/api/tasks/<int:tid>/comment", methods=["POST"])
+@require_auth(role="student|teacher|admin")
+def add_comment(tid):
+    t = Task.query.get_or_404(tid)
+    d = request.json
+    c = Comment(
+        task_id=tid,
+        user_id=request.user["uid"],
+        text=d.get("text", ""),
+        created_at=datetime.datetime.utcnow(),
+    )
+    db.session.add(c)
+    db.session.commit()
+    return "", 201
 
 
 @app.route("/api/tasks/<int:tid>/comment", methods=["POST"])
