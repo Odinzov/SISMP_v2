@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Редактор задачи</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header class="header">
+  <span class="header-text">Редактирование задачи</span>
+  <div class="dropdown">
+    <i id="menuToggle" class="fas fa-list" style="font-size:2rem;cursor:pointer"></i>
+    <nav id="dropdownMenu" class="dropdown-content">
+      <a href="tl-dashboard.html" class="dropdown-item">TL Панель</a>
+    </nav>
+  </div>
+</header>
+<main class="main">
+  <section class="info-section" style="max-width:400px;margin:auto">
+    <label>Часы</label>
+    <input id="effort" type="number" style="width:100%">
+    <label>Дедлайн</label>
+    <input id="deadline" type="date" style="width:100%">
+    <label>Приоритет</label>
+    <input id="priority" type="text" style="width:100%">
+    <div class="buttons" style="justify-content:center;margin-top:1rem">
+      <button id="saveBtn" class="btn">Сохранить</button>
+    </div>
+  </section>
+</main>
+<script src="scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@4/build/cjs/index.js"></script>
+<script>
+const API='/api', tokenKey='pyToken';
+const id=parseInt(new URLSearchParams(location.search).get('id'));
+function load(){
+  fetch(API+`/tasks/${id}`,{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+    .then(r=>r.json()).then(d=>{
+      document.getElementById('effort').value=d.effort||0;
+      document.getElementById('priority').value=d.priority||'';
+      if(d.deadline) document.getElementById('deadline').value=d.deadline.split('T')[0];
+    });
+}
+function save(){
+  const body={
+    effort:parseInt(document.getElementById('effort').value||0),
+    deadline:document.getElementById('deadline').value,
+    priority:document.getElementById('priority').value.trim()
+  };
+  fetch(API+`/tasks/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem(tokenKey)},body:JSON.stringify(body)})
+    .then(()=>location.replace('tl-dashboard.html'));
+}
+if(!localStorage.getItem(tokenKey)) location.replace('login.html');
+document.addEventListener('DOMContentLoaded',()=>{load();document.getElementById('saveBtn').onclick=save;});
+</script>
+</body>
+</html>

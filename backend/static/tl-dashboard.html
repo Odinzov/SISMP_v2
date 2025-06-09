@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Панель тимлида</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header class="header">
+  <span class="header-text">Панель тимлида</span>
+  <div class="dropdown">
+    <i id="menuToggle" class="fas fa-list" style="font-size:2rem;cursor:pointer"></i>
+    <nav id="dropdownMenu" class="dropdown-content">
+      <a href="index.html" class="dropdown-item">Главная</a>
+      <a href="tasks.html" class="dropdown-item">Задачи</a>
+      <a href="tl-dashboard.html" class="dropdown-item">TL Панель</a>
+      <a href="risk-log.html" class="dropdown-item">Риски</a>
+      <a href="reports.html" class="dropdown-item">Отчёты</a>
+    </nav>
+  </div>
+</header>
+<main class="main">
+  <section class="info-section">
+    <h2>Все задачи</h2>
+    <label>Фильтр:
+      <select id="filterSel">
+        <option value="all">Все</option>
+        <option value="risk">Риск</option>
+        <option value="overdue">Просрочено</option>
+      </select>
+    </label>
+    <table id="dashTable" style="width:100%;border-collapse:collapse;margin-top:1rem">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Название</th>
+          <th>Прогресс</th>
+          <th>Дедлайн</th>
+          <th>Приоритет</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div style="margin-top:1rem" id="kpi"></div>
+  </section>
+</main>
+<script src="scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@4/build/cjs/index.js"></script>
+<script>
+const API='/api', tokenKey='pyToken';
+const tbody=document.querySelector('#dashTable tbody');
+function load(){
+  fetch(API+'/tasks',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+    .then(r=>r.json()).then(show);
+}
+function show(list){
+  const f=document.getElementById('filterSel').value;
+  const now=new Date();
+  let risk=0,over=0;
+  tbody.innerHTML='';
+  list.forEach(t=>{
+    const deadline=t.deadline?new Date(t.deadline):null;
+    const isOver=deadline && deadline<now && t.progress<100;
+    const isRisk=t.progress<50 && deadline && (deadline-now)/86400000<=2;
+    if(isRisk) risk++; if(isOver) over++;
+    if(f==='risk' && !isRisk) return;
+    if(f==='overdue' && !isOver) return;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${t.id}</td><td>${t.name}</td><td>${t.progress}%</td>`+
+      `<td>${deadline?deadline.toISOString().split('T')[0]:''}</td>`+
+      `<td>${t.priority}</td>`+
+      `<td><a href="task_edit.html?id=${t.id}">Редактировать</a></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('kpi').textContent=`Рисков: ${risk} | Просрочено: ${over}`;
+}
+
+document.getElementById('filterSel').onchange=load;
+if(!localStorage.getItem(tokenKey)) location.replace('login.html');
+document.addEventListener('DOMContentLoaded',load);
+</script>
+</body>
+</html>
