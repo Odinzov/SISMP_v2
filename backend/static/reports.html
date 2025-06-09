@@ -23,18 +23,31 @@
     <input id="from" type="date" style="width:100%">
     <label>По</label>
     <input id="to" type="date" style="width:100%">
-    <div class="buttons" style="justify-content:center;margin-top:1rem">
-      <button id="csvBtn" class="btn">Скачать CSV</button>
+    <div style="margin-top:1rem">
+      <label><input type="checkbox" id="kindGeneral" checked> Общее</label><br>
+      <label><input type="checkbox" id="kindByUser"> По участникам</label><br>
+      <label><input type="checkbox" id="kindOverdue"> Просрочки</label>
+    </div>
+    <div class="buttons" style="justify-content:center;margin-top:1rem;gap:.5rem">
+      <button id="csvBtn" class="btn">CSV</button>
+      <button id="pdfBtn" class="btn">PDF</button>
     </div>
   </section>
 </main>
 <script src="scripts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const API='/api', tokenKey='pyToken';
-function download(){
+function params(){
   const from=document.getElementById('from').value;
   const to=document.getElementById('to').value;
-  const url=`${API}/reports?from=${from}&to=${to}`;
+  let kind='general';
+  if(document.getElementById('kindOverdue').checked) kind='overdue';
+  if(document.getElementById('kindByUser').checked) kind='by_user';
+  return `from=${from}&to=${to}&kind=${kind}`;
+}
+function download(){
+  const url=`${API}/reports?${params()}`;
   fetch(url,{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
     .then(r=>r.blob()).then(b=>{
       const u=URL.createObjectURL(b);
@@ -42,9 +55,26 @@ function download(){
       a.href=u;a.download='report.csv';a.click();URL.revokeObjectURL(u);
     });
 }
+function downloadPdf(){
+  const url=`${API}/reports?fmt=json&${params()}`;
+  fetch(url,{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+    .then(r=>r.json()).then(data=>{
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF();
+      doc.text('Отчёт',10,10);
+      let y=20;
+      if(Array.isArray(data)&&data.length){
+        const keys=Object.keys(data[0]);
+        doc.text(keys.join(' | '),10,y); y+=10;
+        data.forEach(row=>{doc.text(keys.map(k=>String(row[k])).join(' | '),10,y); y+=10;});
+      }
+      doc.save('report.pdf');
+    });
+}
 if(!localStorage.getItem(tokenKey)) location.replace('login.html');
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('csvBtn').onclick=download;
+  document.getElementById('pdfBtn').onclick=downloadPdf;
 });
 </script>
 </body>

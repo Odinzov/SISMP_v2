@@ -333,27 +333,78 @@ def risk_stream():
 @app.route("/api/reports")
 @require_auth(role="teacher|admin")
 def reports():
+    kind = request.args.get("kind", "general")
+    fmt = request.args.get("fmt", "csv")  # csv or json
+
     q = Task.query
     if "from" in request.args:
-        q = q.filter(Task.deadline >= datetime.datetime.fromisoformat(request.args["from"]))
+        q = q.filter(
+            Task.deadline >= datetime.datetime.fromisoformat(request.args["from"])
+        )
     if "to" in request.args:
-        q = q.filter(Task.deadline <= datetime.datetime.fromisoformat(request.args["to"]))
+        q = q.filter(
+            Task.deadline <= datetime.datetime.fromisoformat(request.args["to"])
+        )
+    if kind == "overdue":
+        now = datetime.datetime.utcnow()
+        q = q.filter(Task.deadline < now, Task.progress < 100)
+
     rows = q.all()
+
+    if kind == "by_user":
+        data = {}
+        for t in rows:
+            key = t.user_id or 0
+            d = data.setdefault(key, {"user": key, "total": 0, "done": 0})
+            d["total"] += 1
+            if t.progress == 100 or t.status == "done":
+                d["done"] += 1
+        result = list(data.values())
+        if fmt == "json":
+            return jsonify(result)
+        buf = io.StringIO()
+        writer = csv.writer(buf)
+        writer.writerow(["user", "total", "done"])
+        for r in result:
+            writer.writerow([r["user"], r["total"], r["done"]])
+        return Response(
+            buf.getvalue(),
+            headers={
+                "Content-Type": "text/csv",
+                "Content-Disposition": "attachment; filename=report.csv",
+            },
+        )
+
+    # general or overdue report (list tasks)
+    data = [
+        {
+            "id": t.id,
+            "name": t.name,
+            "effort": t.effort,
+            "deadline": t.deadline.isoformat() if t.deadline else "",
+            "assignee": t.user_id or "",
+            "status": t.status,
+            "priority": t.priority,
+        }
+        for t in rows
+    ]
+
+    if fmt == "json":
+        return jsonify(data)
+
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerow(["id", "name", "effort", "deadline", "assignee", "status", "priority"])
-    for t in rows:
-        writer.writerow(
-            [
-                t.id,
-                t.name,
-                t.effort,
-                t.deadline.isoformat() if t.deadline else "",
-                t.user_id or "",
-                t.status,
-                t.priority,
-            ]
-        )
+    for d in data:
+        writer.writerow([
+            d["id"],
+            d["name"],
+            d["effort"],
+            d["deadline"],
+            d["assignee"],
+            d["status"],
+            d["priority"],
+        ])
     return Response(
         buf.getvalue(),
         headers={
