@@ -94,7 +94,7 @@ function show(list){
     tr.innerHTML=`<td>${t.id}</td><td>${t.name}</td><td>${t.progress}%</td>`+
       `<td>${deadline?deadline.toISOString().split('T')[0]:''}</td>`+
       `<td>${t.priority}</td>`+
-      `<td><a href="task_edit.html?id=${t.id}">Редактировать</a></td>`;
+      `<td><a href="/task/edit/${t.id}">Редактировать</a></td>`;
     tbody.appendChild(tr);
   });
   const avg=count? (diff/count).toFixed(1):0;
