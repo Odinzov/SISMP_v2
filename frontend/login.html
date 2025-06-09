@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Учебник по Python – Вход / Регистрация</title>
+    <title>Сервис управления заданиями – Вход / Регистрация</title>
     <!-- Подключаем общие стили и иконки -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,7 +44,7 @@
   <body>
     <!-- === Header (полная копия) === -->
     <header class="header">
-      <span class="header-text">Учебник по Python</span>
+      <span class="header-text">Сервис управления заданиями</span>
       <div class="dropdown">
         <i
           id="menuToggle"
@@ -54,6 +54,8 @@
         <nav id="dropdownMenu" class="dropdown-content">
           <a href="index.html" class="dropdown-item">Главная</a>
           <a href="account.html" class="dropdown-item">Аккаунт</a>
+          <a href="tasks.html" class="dropdown-item">Задачи</a>
+          <a href="schedule.html" class="dropdown-item">Календарь</a>
         </nav>
       </div>
     </header>
@@ -71,7 +73,7 @@
         "
       >
         <h2 style="text-align: center; margin-bottom: 1.3rem">
-          Добро пожаловать!
+          Добро пожаловать в сервис!
         </h2>
         <!-- Вкладки -->
         <div
@@ -202,21 +204,6 @@
           loginTab.style.color = inactiveText;
         };
 
-        // --- Simple emulation ---
-        document.getElementById("loginBtn").onclick = () => {
-          const u = loginUser.value.trim(),
-            p = loginPass.value.trim();
-          if (!u || !p) return alert("Заполните поля");
-          localStorage.setItem(tokenKey, u);
-          location.replace("account.html");
-        };
-        document.getElementById("regBtn").onclick = () => {
-          const u = regUser.value.trim(),
-            p = regPass.value.trim();
-          if (!u || !p) return alert("Заполните поля");
-          localStorage.setItem(tokenKey, u);
-          location.replace("account.html");
-        };
       });
     </script>
 
@@ -246,35 +233,4 @@ loginBtn.onclick=()=>{
 </script>
 <!-- END auth patch -->
   </body>
-
-  <script>
-    const USERS_KEY = "users";
-    function loadUsers() {
-      return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
-    }
-    function saveUsers(x) {
-      localStorage.setItem(USERS_KEY, JSON.stringify(x));
-    }
-
-    regBtn.onclick = () => {
-      const u = regUser.value.trim(),
-        p = regPass.value.trim();
-      if (!u || !p) return alert("заполните");
-      const users = loadUsers();
-      if (users.find((o) => o.u === u)) return alert("логин занят");
-      users.push({ u, p, role: "student" });
-      saveUsers(users);
-      localStorage.setItem("pyToken", u); // «токен» = логин
-      location.replace("account.html");
-    };
-
-    loginBtn.onclick = () => {
-      const u = loginUser.value.trim(),
-        p = loginPass.value.trim();
-      const user = loadUsers().find((o) => o.u === u && o.p === p);
-      if (!user) return alert("ошибка");
-      localStorage.setItem("pyToken", u);
-      location.replace("account.html");
-    };
-  </script>
 </html>
