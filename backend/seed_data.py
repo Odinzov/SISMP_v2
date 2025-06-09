@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from passlib.hash import bcrypt
 
 from app import app, db
@@ -36,7 +36,7 @@ with app.app_context():
     bob = create_user("bob", "bob@example.com", "bobpass")
     charlie = create_user("charlie", "charlie@example.com", "charliepass")
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     create_task(
         name="Подготовить отчёт",
         description="Сформировать итоговый отчёт проекта",
