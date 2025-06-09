@@ -163,6 +163,7 @@ def task_dict(t: Task):
         "effort": t.effort,
         "deadline": t.deadline.isoformat() if t.deadline else None,
         "assignee": t.user_id,
+        "parent": t.parent_id,
         "status": t.status,
         "progress": t.progress,
         "priority": t.priority,
@@ -199,6 +200,7 @@ def task_detail(tid):
     t = Task.query.get_or_404(tid)
     if request.method == "GET":
         comments = Comment.query.filter_by(task_id=tid).all()
+        subs = Task.query.filter_by(parent_id=tid).all()
         return jsonify(
             {
                 **task_dict(t),
@@ -210,6 +212,7 @@ def task_detail(tid):
                     }
                     for c in comments
                 ],
+                "subtasks": [task_dict(s) for s in subs],
             }
         )
 
@@ -427,6 +430,21 @@ def release_task(tid):
     t.status = "open"
     db.session.commit()
     return "", 204
+
+
+@app.route("/api/tasks/<int:tid>/subtasks", methods=["POST"])
+@require_auth(role="teacher|admin")
+def create_subtasks(tid):
+    parent = Task.query.get_or_404(tid)
+    data = request.json or {}
+    names = data.get("names", [])
+    created = []
+    for name in names:
+        st = Task(name=name, parent_id=parent.id, status="open")
+        db.session.add(st)
+        created.append(st)
+    db.session.commit()
+    return jsonify([task_dict(t) for t in created]), 201
 
 
 @app.route("/api/tasks/<int:tid>/comment", methods=["POST"])

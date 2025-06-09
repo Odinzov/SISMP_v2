@@ -23,6 +23,7 @@ class Task(db.Model):
     effort   = db.Column(db.Integer)  # hours
     deadline = db.Column(db.DateTime)
     user_id  = db.Column(db.Integer, db.ForeignKey('user.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('task.id'))
     status   = db.Column(db.String(20), default='open')  # open|in_progress|done
     progress = db.Column(db.Integer, default=0)  # percent complete
     priority = db.Column(db.String(20), default='normal')

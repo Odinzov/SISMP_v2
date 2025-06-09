@@ -61,6 +61,7 @@ function show(list){
   const now=new Date();
   let risk=0,over=0;
   tbody.innerHTML='';
+  list.sort((a,b)=>((a.parent||0)-(b.parent||0))||a.id-b.id);
   list.forEach(t=>{
     const deadline=t.deadline?new Date(t.deadline):null;
     const isOver=deadline && deadline<now && t.progress<100;
@@ -69,7 +70,8 @@ function show(list){
     if(f==='risk' && !isRisk) return;
     if(f==='overdue' && !isOver) return;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${t.id}</td><td>${t.name}</td><td>${t.progress}%</td>`+
+    const name=t.parent?`↳ ${t.name}`:t.name;
+    tr.innerHTML=`<td>${t.id}</td><td>${name}</td><td>${t.progress}%</td>`+
       `<td>${deadline?deadline.toISOString().split('T')[0]:''}</td>`+
       `<td>${t.priority}</td>`+
       `<td><a href="task_edit.html?id=${t.id}">Редактировать</a></td>`;
