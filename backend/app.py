@@ -177,6 +177,7 @@ def task_dict(t: Task):
         "status": t.status,
         "progress": t.progress,
         "priority": t.priority,
+        "parent_id": t.parent_id,
     }
 
 
@@ -195,6 +196,7 @@ def tasks():
             deadline=datetime.datetime.fromisoformat(d["deadline"]) if d.get("deadline") else None,
             status=d.get("status", "open"),
             priority=d.get("priority", "normal"),
+            parent_id=d.get("parent_id"),
         )
         db.session.add(t)
         db.session.commit()

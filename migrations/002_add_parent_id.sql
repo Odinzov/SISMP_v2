@@ -1,0 +1,1 @@
+ALTER TABLE task ADD COLUMN parent_id INTEGER REFERENCES task(id);
