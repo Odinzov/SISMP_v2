@@ -20,6 +20,7 @@ class Result(db.Model):
 class Task(db.Model):
     id       = db.Column(db.Integer, primary_key=True)
     name     = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.String(200))
     effort   = db.Column(db.Integer)  # hours
     deadline = db.Column(db.DateTime)
     user_id  = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -41,4 +42,12 @@ class RiskEvent(db.Model):
     task_id   = db.Column(db.Integer, db.ForeignKey('task.id'))
     message   = db.Column(db.String(200))
     created_at = db.Column(db.DateTime)
+
+
+class Slot(db.Model):
+    """Time slot of user availability."""
+    id      = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    day     = db.Column(db.Integer, nullable=False)   # 0..6 (Mon..Sun)
+    hour    = db.Column(db.Integer, nullable=False)  # e.g. 9..16
 

@@ -4,13 +4,15 @@ import os
 import csv
 import io
 from pathlib import Path
+from queue import Queue
+import json
 
 import jwt  # PyJWT
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 
 from auth import auth_bp
-from models import Task, Result, User, Comment, RiskEvent, db
+from models import Task, Result, User, Comment, RiskEvent, Slot, db
 
 # ── Flask set‑up ────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent
@@ -35,6 +37,14 @@ with app.app_context():
 app.register_blueprint(auth_bp, url_prefix="/api")
 
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret")  # never keep this in code for prod!
+
+# Subscribers for Server-Sent Events. Each connection adds a Queue to this list.
+subscribers: list[Queue] = []
+
+def publish_event(data: dict) -> None:
+    """Send event to all subscribers."""
+    for q in list(subscribers):
+        q.put(data)
 
 # ── Frontend entry ──────────────────────────────────────────────────────────────
 @app.route("/")
@@ -160,6 +170,7 @@ def task_dict(t: Task):
     return {
         "id": t.id,
         "name": t.name,
+        "description": t.description,
         "effort": t.effort,
         "deadline": t.deadline.isoformat() if t.deadline else None,
         "assignee": t.user_id,
@@ -179,6 +190,7 @@ def tasks():
         d = request.json
         t = Task(
             name=d["name"],
+            description=d.get("description"),
             effort=d.get("effort", 0),
             deadline=datetime.datetime.fromisoformat(d["deadline"]) if d.get("deadline") else None,
             status=d.get("status", "open"),
@@ -292,6 +304,33 @@ def risk_events():
     )
 
 
+@app.route("/api/risk-stream")
+def risk_stream():
+    """Server-Sent Events endpoint broadcasting new risk events."""
+    token = request.args.get("token")
+    if not token:
+        return "token required", 401
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    except jwt.InvalidTokenError:
+        return "invalid token", 401
+    if payload.get("role") not in ("teacher", "admin"):
+        return "forbidden", 403
+
+    q: Queue = Queue()
+    subscribers.append(q)
+
+    def gen():
+        try:
+            while True:
+                data = q.get()
+                yield f"data: {json.dumps(data)}\n\n"
+        finally:
+            subscribers.remove(q)
+
+    return Response(gen(), mimetype="text/event-stream", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
 @app.route("/api/reports")
 @require_auth(role="teacher|admin")
 def reports():
@@ -323,6 +362,48 @@ def reports():
             "Content-Disposition": "attachment; filename=report.csv",
         },
     )
+
+
+@app.route("/api/slots", methods=["GET", "PUT", "POST"])
+@require_auth()
+def slots():
+    """List or replace user's availability slots."""
+    if request.method == "GET":
+        rows = Slot.query.filter_by(user_id=request.user["uid"]).all()
+        return jsonify([
+            {"id": s.id, "day": s.day, "hour": s.hour} for s in rows
+        ])
+
+    # POST and PUT both replace current user's slots in bulk
+    data = request.json or {}
+    items = data.get("slots", [])
+    Slot.query.filter_by(user_id=request.user["uid"]).delete()
+    for item in items:
+        db.session.add(
+            Slot(user_id=request.user["uid"], day=item["day"], hour=item["hour"])
+        )
+    db.session.commit()
+    return "", 204
+
+
+@app.route("/api/slots/<int:sid>", methods=["PATCH", "DELETE"])
+@require_auth()
+def slot_detail(sid):
+    s = Slot.query.get_or_404(sid)
+    if s.user_id != request.user["uid"]:
+        return jsonify({"msg": "forbidden"}), 403
+    if request.method == "DELETE":
+        db.session.delete(s)
+        db.session.commit()
+        return "", 204
+
+    data = request.json or {}
+    if "day" in data:
+        s.day = data["day"]
+    if "hour" in data:
+        s.hour = data["hour"]
+    db.session.commit()
+    return "", 204
 
 
 @app.route("/api/tasks/<int:tid>", methods=["GET", "PATCH"])
@@ -396,7 +477,7 @@ def update_task(tid):
         return jsonify({"msg": "forbidden"}), 403
     t = Task.query.get_or_404(tid)
     d = request.json
-    for k in ("name", "effort", "status", "priority"):
+    for k in ("name", "effort", "status", "priority", "description"):
         if k in d:
             setattr(t, k, d[k])
     if "deadline" in d:
