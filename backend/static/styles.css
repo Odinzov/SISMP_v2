@@ -34,6 +34,12 @@ body {
   font-size: 2rem;
 }
 
+.menu-icon {
+  font-size: 2rem;
+  cursor: pointer;
+  color: inherit;
+}
+
 .dropdown {
   position: relative;
 }
@@ -60,13 +66,15 @@ body {
 }
 
 .dropdown-item {
+  display: block;
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   border: none;
   background: none;
   color: var(--text-color);
   text-align: left;
   white-space: nowrap;
+  line-height: 1.4;
 }
 
 .dropdown-item:first-child {
@@ -267,4 +275,13 @@ h3 {
 
 .alert-row{
   background-color:#fff3cd;
+}
+
+.feature-list {
+  list-style: disc;
+  padding-left: 1.2rem;
+}
+
+.feature-list li {
+  margin-bottom: 0.5rem;
 }
