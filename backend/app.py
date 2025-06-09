@@ -10,7 +10,7 @@ from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 
 from auth import auth_bp
-from models import Task, Result, User, Comment, RiskEvent, db
+from models import Task, Result, User, Comment, RiskEvent, Slot, db
 
 # ── Flask set‑up ────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent
@@ -322,6 +322,48 @@ def reports():
             "Content-Disposition": "attachment; filename=report.csv",
         },
     )
+
+
+@app.route("/api/slots", methods=["GET", "PUT", "POST"])
+@require_auth()
+def slots():
+    """List or replace user's availability slots."""
+    if request.method == "GET":
+        rows = Slot.query.filter_by(user_id=request.user["uid"]).all()
+        return jsonify([
+            {"id": s.id, "day": s.day, "hour": s.hour} for s in rows
+        ])
+
+    # POST and PUT both replace current user's slots in bulk
+    data = request.json or {}
+    items = data.get("slots", [])
+    Slot.query.filter_by(user_id=request.user["uid"]).delete()
+    for item in items:
+        db.session.add(
+            Slot(user_id=request.user["uid"], day=item["day"], hour=item["hour"])
+        )
+    db.session.commit()
+    return "", 204
+
+
+@app.route("/api/slots/<int:sid>", methods=["PATCH", "DELETE"])
+@require_auth()
+def slot_detail(sid):
+    s = Slot.query.get_or_404(sid)
+    if s.user_id != request.user["uid"]:
+        return jsonify({"msg": "forbidden"}), 403
+    if request.method == "DELETE":
+        db.session.delete(s)
+        db.session.commit()
+        return "", 204
+
+    data = request.json or {}
+    if "day" in data:
+        s.day = data["day"]
+    if "hour" in data:
+        s.hour = data["hour"]
+    db.session.commit()
+    return "", 204
 
 
 @app.route("/api/tasks/<int:tid>", methods=["GET", "PATCH"])
