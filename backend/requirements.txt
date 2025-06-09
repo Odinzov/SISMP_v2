@@ -3,4 +3,5 @@ flask_sqlalchemy
 flask_cors
 pyjwt[crypto]
 passlib[bcrypt]
+bcrypt<4.1
 python-dotenv
