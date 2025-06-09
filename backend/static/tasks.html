@@ -24,6 +24,7 @@
   <main class="main">
     <section class="info-section">
       <h2>Список задач</h2>
+      <button id="exportBtn" class="btn" style="margin-bottom:1rem">Экспорт CSV</button>
       <table style="width:100%;border-collapse:collapse" id="taskTable">
         <thead style="background:#f0f6ff">
           <tr>
@@ -68,13 +69,29 @@
       fetch(API+`/tasks/${id}/claim`,{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
         .then(r=>{if(!r.ok) return alert('Ошибка'); loadTasks();});
     }
-    function release(id){
-      fetch(API+`/tasks/${id}/release`,{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
-        .then(r=>{if(!r.ok) return alert('Ошибка'); loadTasks();});
-    }
-    const currentUser = localStorage.getItem(tokenKey)?jwt_decode(localStorage.getItem(tokenKey)).uid:null;
-    document.addEventListener('DOMContentLoaded', loadTasks);
-  </script>
+      function release(id){
+        fetch(API+`/tasks/${id}/release`,{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+          .then(r=>{if(!r.ok) return alert('Ошибка'); loadTasks();});
+      }
+      function exportCSV(){
+        fetch(API+'/tasks/export',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
+          .then(r=>r.blob())
+          .then(blob=>{
+            const url=window.URL.createObjectURL(blob);
+            const a=document.createElement('a');
+            a.href=url;
+            a.download='tasks.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+          });
+      }
+      const currentUser = localStorage.getItem(tokenKey)?jwt_decode(localStorage.getItem(tokenKey)).uid:null;
+      document.addEventListener('DOMContentLoaded', ()=>{
+        loadTasks();
+        const btn=document.getElementById('exportBtn');
+        if(btn) btn.addEventListener('click', exportCSV);
+      });
+    </script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4/build/cjs/index.js"></script>
 </body>
 </html>
