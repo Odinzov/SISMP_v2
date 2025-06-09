@@ -14,6 +14,7 @@
     <i id="menuToggle" class="fas fa-list" style="font-size:2rem;cursor:pointer"></i>
     <nav id="dropdownMenu" class="dropdown-content">
       <a href="tl-dashboard.html" class="dropdown-item">TL Панель</a>
+      <a href="#" id="splitBtn" class="dropdown-item">Разбить на под-задачи</a>
     </nav>
   </div>
 </header>
@@ -57,7 +58,23 @@ function save(){
     .then(()=>location.replace('tl-dashboard.html'));
 }
 if(!localStorage.getItem(tokenKey)) location.replace('login.html');
-document.addEventListener('DOMContentLoaded',()=>{load();document.getElementById('saveBtn').onclick=save;});
+function splitTasks(){
+  const names=prompt('Названия под-задач через запятую:');
+  if(!names) return;
+  const list=names.split(',').map(s=>s.trim()).filter(Boolean);
+  const token=localStorage.getItem(tokenKey);
+  Promise.all(list.map(n=>fetch(API+'/tasks',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+    body:JSON.stringify({name:n,parent_id:id})
+  })) ).then(()=>location.reload());
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  load();
+  document.getElementById('saveBtn').onclick=save;
+  const btn=document.getElementById('splitBtn');
+  if(btn) btn.onclick=splitTasks;
+});
 </script>
 </body>
 </html>

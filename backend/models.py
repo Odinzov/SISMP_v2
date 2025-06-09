@@ -27,6 +27,7 @@ class Task(db.Model):
     status   = db.Column(db.String(20), default='open')  # open|in_progress|done
     progress = db.Column(db.Integer, default=0)  # percent complete
     priority = db.Column(db.String(20), default='normal')
+    parent_id = db.Column(db.Integer, db.ForeignKey('task.id'))
 
 
 class Comment(db.Model):
