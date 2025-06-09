@@ -73,13 +73,15 @@ function highlightStored(){
 function show(list){
   const f=document.getElementById('filterSel').value;
   const now=new Date();
-  let risk=0,over=0;
+  let risk=0,over=0,diff=0,count=0;
   tbody.innerHTML='';
   list.forEach(t=>{
     const deadline=t.deadline?new Date(t.deadline):null;
     const isOver=deadline && deadline<now && t.progress<100;
     const isRisk=t.progress<50 && deadline && (deadline-now)/86400000<=2;
     if(isRisk) risk++; if(isOver) over++;
+    diff+=t.effort-(t.effort*(t.progress||0)/100);
+    count++;
     if(f==='risk' && !isRisk) return;
     if(f==='overdue' && !isOver) return;
     const tr=document.createElement('tr');
@@ -89,7 +91,8 @@ function show(list){
       `<td><a href="task_edit.html?id=${t.id}">Редактировать</a></td>`;
     tbody.appendChild(tr);
   });
-  document.getElementById('kpi').textContent=`Рисков: ${risk} | Просрочено: ${over}`;
+  const avg=count? (diff/count).toFixed(1):0;
+  document.getElementById('kpi').textContent=`Рисков: ${risk} | Просрочено: ${over} | Ср. отклонение: ${avg}`;
   highlightStored();
 }
 
