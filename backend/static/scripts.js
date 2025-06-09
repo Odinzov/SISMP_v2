@@ -15,7 +15,9 @@ function initMenu() {
     const token = localStorage.getItem("pyToken");
     if (token) {
       try {
-        const role = JSON.parse(atob(token.split(".")[1])).role;
+        const b64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padded = b64 + "=".repeat((4 - b64.length % 4) % 4);
+        const role = JSON.parse(atob(padded)).role;
         if (role !== "teacher" && role !== "admin") {
           dropdownMenu.querySelectorAll(".teacher-link").forEach(el => {
             el.style.display = "none";
