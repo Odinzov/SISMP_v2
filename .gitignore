@@ -1,3 +1,4 @@
 backend/instance/
 *.db
 backend/venv/
+**/__pycache__/
