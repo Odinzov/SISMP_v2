@@ -52,6 +52,18 @@ def index():
     """Serve the login page (or index.html, change if needed)."""
     return app.send_static_file("login.html")
 
+# Route serving task details page by id
+@app.route("/task/<int:tid>")
+def task_page(tid: int):
+    """Return task.html for client-side rendering."""
+    return app.send_static_file("task.html")
+
+# Route serving task edit page by id
+@app.route("/task/edit/<int:tid>")
+def task_edit_page(tid: int):
+    """Return task_edit.html for editing tasks."""
+    return app.send_static_file("task_edit.html")
+
 # ── Helpers ─────────────────────────────────────────────────────────────────────
 
 def require_auth(role: str | None = None):

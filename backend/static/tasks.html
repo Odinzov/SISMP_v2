@@ -68,7 +68,7 @@
           `<td>${t.assignee||''}</td>`+
           `<td>${t.status}</td>`+
           `<td>`+
-          `<a href="task.html?id=${t.id}" class='btn' style='margin-right:4px'>Подробнее</a>`+
+          `<a href="/task/${t.id}" class='btn' style='margin-right:4px'>Подробнее</a>`+
           (t.assignee? (t.assignee==currentUser?`<button onclick="release(${t.id})" class='btn'>Отдать</button>`:'') : `<button onclick="claim(${t.id})" class='btn'>Взять</button>`)+`</td>`;
         tbody.appendChild(tr);
       });
