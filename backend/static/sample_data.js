@@ -1,0 +1,19 @@
+// Простые заглушки для демонстрации работы интерфейса
+const SAMPLE_TASKS = [
+  {id: 1, name: 'Обновление календаря', effort: 4, deadline: '2025-06-20', assignee: 'alice', status: 'в процессе', progress: 40, priority: 'A'},
+  {id: 2, name: 'Написать отчёт', effort: 2, deadline: '2025-06-18', assignee: 'bob', status: 'выполнено', progress: 100, priority: 'B'},
+  {id: 3, name: 'Обсудить требования', effort: 1, deadline: '2025-06-22', assignee: '', status: 'открыта', progress: 0, priority: 'C'}
+];
+
+const SAMPLE_RISKS = [
+  {date: '2025-06-15', task: 'Обновление календаря', message: 'Просрочено на 1 день'},
+  {date: '2025-06-14', task: 'Написать отчёт', message: 'Отчёт ещё не загружен'}
+];
+
+const SAMPLE_SLOTS = [
+  {day: 1, hour: 10},
+  {day: 1, hour: 11},
+  {day: 2, hour: 14},
+  {day: 4, hour: 9}
+];
+

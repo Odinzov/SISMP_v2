@@ -14,7 +14,10 @@
     <i id="menuToggle" class="fas fa-list" style="font-size:2rem;cursor:pointer"></i>
     <nav id="dropdownMenu" class="dropdown-content">
       <a href="index.html" class="dropdown-item">Главная</a>
+      <a href="dashboard.html" class="dropdown-item">Аккаунт</a>
       <a href="tasks.html" class="dropdown-item">Задачи</a>
+      <a href="modern_calendar.html" class="dropdown-item">Календарь</a>
+      <a href="profile.html" class="dropdown-item">Профиль</a>
       <a href="tl-dashboard.html" class="dropdown-item">TL Панель</a>
       <a href="risk-log.html" class="dropdown-item">Риски</a>
       <a href="reports.html" class="dropdown-item">Отчёты</a>
@@ -48,13 +51,16 @@
   </section>
 </main>
 <script src="scripts.js"></script>
+<script src="sample_data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 <script>
 const API='/api', tokenKey='pyToken';
 const tbody=document.querySelector('#dashTable tbody');
 function load(){
   fetch(API+'/tasks',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
-    .then(r=>r.json()).then(show);
+    .then(r=>r.json())
+    .then(data=>{if(!Array.isArray(data)||!data.length)data=SAMPLE_TASKS;show(data);})
+    .catch(()=>show(SAMPLE_TASKS));
 }
 function highlightTask(id){
   const row=[...tbody.children].find(r=>r.firstElementChild.textContent==id);
