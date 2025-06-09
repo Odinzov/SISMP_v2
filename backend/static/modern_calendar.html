@@ -87,7 +87,6 @@
   </section>
 </main>
 <script src="scripts.js"></script>
-<script src="sample_data.js"></script>
 <script>
   const API = '/api';
   const tokenKey = 'pyToken';
@@ -97,10 +96,24 @@
   const calendar = document.getElementById('calendar');
   const stats = document.getElementById('stats');
   const selected = new Set();
-  SAMPLE_SLOTS.forEach(s => selected.add(`${s.day}-${s.hour}`));
   let drag = false;
   let dragState = false;
   let view = 'week';
+
+  function loadSlots() {
+    fetch('/api/slots', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem(tokenKey)
+      }
+    })
+      .then(r => r.json())
+      .then(list => {
+        selected.clear();
+        list.forEach(s => selected.add(`${s.day}-${s.hour}`));
+        buildGrid();
+        updateStats();
+      });
+  }
 
   function buildGrid() {
     calendar.innerHTML = '';
@@ -200,8 +213,7 @@
     buildGrid();
   };
 
-  buildGrid();
-  updateStats();
+  document.addEventListener('DOMContentLoaded', loadSlots);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 </body>
