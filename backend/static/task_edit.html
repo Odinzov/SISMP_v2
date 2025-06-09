@@ -25,6 +25,8 @@
     <input id="deadline" type="date" style="width:100%">
     <label>Приоритет</label>
     <input id="priority" type="text" style="width:100%">
+    <label>Описание</label>
+    <textarea id="description" style="width:100%"></textarea>
     <div class="buttons" style="justify-content:center;margin-top:1rem">
       <button id="saveBtn" class="btn">Сохранить</button>
       <button id="splitBtn" class="btn" style="margin-left:0.5rem">Разбить на под‑задачи</button>
@@ -41,6 +43,7 @@ function load(){
     .then(r=>r.json()).then(d=>{
       document.getElementById('effort').value=d.effort||0;
       document.getElementById('priority').value=d.priority||'';
+      document.getElementById('description').value=d.description||'';
       if(d.deadline) document.getElementById('deadline').value=d.deadline.split('T')[0];
     });
 }
@@ -48,7 +51,8 @@ function save(){
   const body={
     effort:parseInt(document.getElementById('effort').value||0),
     deadline:document.getElementById('deadline').value,
-    priority:document.getElementById('priority').value.trim()
+    priority:document.getElementById('priority').value.trim(),
+    description:document.getElementById('description').value.trim()
   };
   fetch(API+`/tasks/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem(tokenKey)},body:JSON.stringify(body)})
     .then(()=>location.replace('tl-dashboard.html'));

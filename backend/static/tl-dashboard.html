@@ -56,6 +56,20 @@ function load(){
   fetch(API+'/tasks',{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
     .then(r=>r.json()).then(show);
 }
+function highlightTask(id){
+  const row=[...tbody.children].find(r=>r.firstElementChild.textContent==id);
+  if(row) row.classList.add('alert-row');
+}
+function storeAlert(ev){
+  const arr=JSON.parse(localStorage.getItem('unseenAlerts')||'[]');
+  arr.push(ev); localStorage.setItem('unseenAlerts',JSON.stringify(arr));
+}
+function highlightStored(){
+  const arr=JSON.parse(localStorage.getItem('unseenAlerts')||'[]');
+  arr.forEach(ev=>highlightTask(ev.task));
+  if(arr.length) localStorage.removeItem('unseenAlerts');
+}
+
 function show(list){
   const f=document.getElementById('filterSel').value;
   const now=new Date();
@@ -78,11 +92,21 @@ function show(list){
     tbody.appendChild(tr);
   });
   document.getElementById('kpi').textContent=`Рисков: ${risk} | Просрочено: ${over}`;
+  highlightStored();
 }
 
 document.getElementById('filterSel').onchange=load;
 if(!localStorage.getItem(tokenKey)) location.replace('login.html');
-document.addEventListener('DOMContentLoaded',load);
+function connect(){
+  const es=new EventSource(`${API}/risk-stream?token=${localStorage.getItem(tokenKey)}`);
+  es.onmessage=e=>{
+    const ev=JSON.parse(e.data);
+    highlightTask(ev.task);
+    storeAlert(ev);
+    alert(`Риск: задача ${ev.task} - ${ev.message}`);
+  };
+}
+document.addEventListener('DOMContentLoaded',()=>{load();connect();});
 </script>
 </body>
 </html>
