@@ -53,7 +53,7 @@
         ></i>
         <nav id="dropdownMenu" class="dropdown-content">
           <a href="index.html" class="dropdown-item">Главная</a>
-          <a href="account.html" class="dropdown-item">Аккаунт</a>
+          <a href="dashboard.html" class="dropdown-item">Аккаунт</a>
           <a href="tasks.html" class="dropdown-item">Задачи</a>
           <a href="schedule.html" class="dropdown-item">Календарь</a>
           <a href="profile.html" class="dropdown-item">Профиль</a>
@@ -180,7 +180,7 @@
 
         // --- Редирект, если уже вошёл ---
         const tokenKey = "pyToken";
-        if (localStorage.getItem(tokenKey)) location.replace("account.html");
+        if (localStorage.getItem(tokenKey)) location.replace("dashboard.html");
 
         // --- Tabs ---
         const activeClr = "#1e88e5",
@@ -220,7 +220,7 @@ regBtn.onclick=()=>{
   fetch(API+"/register",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({username:u,password:p})})
     .then(r=>r.json()).then(d=>{
-      localStorage.setItem(tokenKey,d.token);location="account.html";
+      localStorage.setItem(tokenKey,d.token);location="dashboard.html";
     });
 };
 loginBtn.onclick=()=>{
@@ -230,7 +230,7 @@ loginBtn.onclick=()=>{
     body:JSON.stringify({username:u,password:p})})
     .then(r=>{if(!r.ok)throw 0;return r.json();})
     .then(d=>{
-      localStorage.setItem(tokenKey,d.token);location="account.html";
+      localStorage.setItem(tokenKey,d.token);location="dashboard.html";
     })
     .catch(()=>alert("Ошибка входа"));
 };
