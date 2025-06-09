@@ -50,9 +50,13 @@
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 <script>
 const API='/api', tokenKey='pyToken';
-const pathMatch = location.pathname.match(/\/task\/(\d+)/);
-const taskId = pathMatch ? parseInt(pathMatch[1])
-  : parseInt(new URLSearchParams(location.search).get('id'));
+const params=new URLSearchParams(location.search);
+const pathMatch=location.pathname.match(/\/task\/(\d+)/);
+const idStr=pathMatch?pathMatch[1]:params.get('id');
+const taskId=idStr?parseInt(idStr):NaN;
+if(Number.isNaN(taskId)){
+  location.replace('tasks.html');
+}
 let currentUser=null;
 function load(){
   fetch(API+`/tasks/${taskId}`,{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
