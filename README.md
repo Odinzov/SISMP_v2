@@ -57,7 +57,7 @@ python app.py
 - `index.html` — главная страница
 - `tasks.html` — список задач
 - `schedule.html` — календарь
-- `account.html` — личный кабинет
+- `dashboard.html` — личный кабинет
 
 ---
 
