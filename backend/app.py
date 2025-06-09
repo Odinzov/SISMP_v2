@@ -139,6 +139,21 @@ def profile():
     db.session.commit()
     return "", 204
 
+
+@app.route("/api/profile", methods=["GET", "PATCH"])
+@require_auth()
+def profile():
+    u = User.query.get_or_404(request.user["uid"])
+    if request.method == "GET":
+        return jsonify({"id": u.id, "username": u.username, "timezone": u.timezone})
+    data = request.json
+    if "timezone" in data:
+        u.timezone = data["timezone"]
+    if "username" in data:
+        u.username = data["username"]
+    db.session.commit()
+    return "", 204
+
 # ── API: tasks ──────────────────────────────────────────────────────────────────
 
 def task_dict(t: Task):
@@ -309,6 +324,69 @@ def reports():
     )
 
 
+@app.route("/api/tasks/<int:tid>", methods=["GET", "PATCH"])
+@require_auth(role="student|teacher|admin")
+def task_detail(tid):
+    t = Task.query.get_or_404(tid)
+    if request.method == "GET":
+        comments = Comment.query.filter_by(task_id=tid).all()
+        return jsonify(
+            {
+                **task_dict(t),
+                "comments": [
+                    {
+                        "user": c.user_id,
+                        "text": c.text,
+                        "date": c.created_at.isoformat(),
+                    }
+                    for c in comments
+                ],
+            }
+        )
+
+    # PATCH
+    d = request.json
+    if "progress" in d:
+        if request.user["uid"] != t.user_id and request.user["role"] not in (
+            "teacher",
+            "admin",
+        ):
+            return jsonify({"msg": "forbidden"}), 403
+        t.progress = int(d["progress"])
+        if t.progress >= 100:
+            t.status = "pending_review"
+    db.session.commit()
+    return "", 204
+
+
+@app.route("/api/tasks/export")
+@require_auth(role="student|teacher|admin")
+def export_tasks():
+    """Return all tasks as a CSV file."""
+    rows = Task.query.all()
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["id", "name", "effort", "deadline", "assignee", "status"])
+    for t in rows:
+        writer.writerow(
+            [
+                t.id,
+                t.name,
+                t.effort,
+                t.deadline.isoformat() if t.deadline else "",
+                t.user_id or "",
+                t.status,
+            ]
+        )
+    return Response(
+        buf.getvalue(),
+        headers={
+            "Content-Type": "text/csv",
+            "Content-Disposition": "attachment; filename=tasks.csv",
+        },
+    )
+
+
 @app.route("/api/tasks/<int:tid>", methods=["PUT"])
 @require_auth(role="student|teacher|admin")
 def update_task(tid):
@@ -349,6 +427,22 @@ def release_task(tid):
     t.status = "open"
     db.session.commit()
     return "", 204
+
+
+@app.route("/api/tasks/<int:tid>/comment", methods=["POST"])
+@require_auth(role="student|teacher|admin")
+def add_comment(tid):
+    t = Task.query.get_or_404(tid)
+    d = request.json
+    c = Comment(
+        task_id=tid,
+        user_id=request.user["uid"],
+        text=d.get("text", ""),
+        created_at=datetime.datetime.utcnow(),
+    )
+    db.session.add(c)
+    db.session.commit()
+    return "", 201
 
 
 @app.route("/api/tasks/<int:tid>/comment", methods=["POST"])
