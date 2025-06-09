@@ -26,7 +26,9 @@ def require_auth(role=None):
             try:
                 payload = jwt.decode(hdr[1], JWT_SECRET, algorithms=['HS256'])
             except jwt.ExpiredSignatureError:
-                return jsonify({'msg':'token expired'}), 401
+                return jsonify({'msg': 'token expired'}), 401
+            except jwt.InvalidTokenError:
+                return jsonify({'msg': 'token invalid'}), 401
             if role and payload['role'] not in role.split('|'):
                 return jsonify({'msg':'forbidden'}), 403
             request.user = payload
@@ -73,9 +75,11 @@ def task_dict(t):
 
 
 @app.route('/api/tasks', methods=['GET', 'POST'])
-@require_auth()
+@require_auth(role='student|teacher|admin')
 def tasks():
     if request.method == 'POST':
+        if request.user['role'] not in ('teacher', 'admin'):
+            return jsonify({'msg': 'forbidden'}), 403
         d = request.json
         t = Task(name=d['name'], effort=d.get('effort', 0),
                  deadline=datetime.datetime.fromisoformat(d['deadline']) if d.get('deadline') else None,
@@ -87,8 +91,10 @@ def tasks():
 
 
 @app.route('/api/tasks/<int:tid>', methods=['PUT'])
-@require_auth()
+@require_auth(role='student|teacher|admin')
 def update_task(tid):
+    if request.user['role'] not in ('teacher', 'admin'):
+        return jsonify({'msg': 'forbidden'}), 403
     t = Task.query.get_or_404(tid)
     d = request.json
     for k in ['name', 'effort', 'status']:

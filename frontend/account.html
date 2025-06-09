@@ -90,10 +90,11 @@
     <script>
       // ===== Проверяем токен =====
       const tokenKey = "pyToken";
-      const user = localStorage.getItem(tokenKey);
-      if (!user) {
-        location.replace("login.html");
-      }
+      const token = localStorage.getItem(tokenKey);
+      if (!token) location.replace("login.html");
+      const parsed = jwt_decode(token);
+      document.getElementById("dashName").textContent = parsed.u;
+      const currentUid = parsed.uid;
 
       // ===== Меню =====
       const menuToggle = document.getElementById("menuToggle");
