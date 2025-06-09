@@ -220,6 +220,7 @@ body {
   justify-content: space-between;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  gap: 0.5rem;
 }
 
 .save-button-container {
