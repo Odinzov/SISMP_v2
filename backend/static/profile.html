@@ -27,6 +27,10 @@
     <h2>Настройки</h2>
     <label>Имя пользователя</label>
     <input id="username" type="text" style="width:100%;padding:0.5rem;margin:0.3rem 0 1rem">
+    <label>Email</label>
+    <input id="email" type="email" readonly style="width:100%;padding:0.5rem;margin:0.3rem 0 1rem;background:#eee">
+    <label>Роль</label>
+    <input id="role" type="text" readonly style="width:100%;padding:0.5rem;margin:0.3rem 0 1rem;background:#eee">
     <label>Часовой пояс</label>
     <input id="tz" type="text" style="width:100%;padding:0.5rem;margin:0.3rem 0 1rem" placeholder="UTC">
     <div class="buttons" style="justify-content:center">
@@ -43,7 +47,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   const token=localStorage.getItem(tokenKey);
   if(!token) location.replace('login.html');
   fetch(API+'/profile',{headers:{'Authorization':'Bearer '+token}})
-    .then(r=>r.json()).then(d=>{document.getElementById('username').value=d.username;document.getElementById('tz').value=d.timezone;});
+    .then(r=>r.json()).then(d=>{
+      document.getElementById('username').value=d.username;
+      document.getElementById('email').value=d.email;
+      document.getElementById('role').value=d.role;
+      document.getElementById('tz').value=d.timezone;
+    });
   document.getElementById('save').onclick=()=>{
     const body={username:document.getElementById('username').value.trim(),timezone:document.getElementById('tz').value.trim()};
     fetch(API+'/profile',{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(body)}).then(()=>alert('Сохранено'));

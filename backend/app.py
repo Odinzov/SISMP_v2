@@ -138,25 +138,19 @@ def all_results():
 @app.route("/api/profile", methods=["GET", "PATCH"])
 @require_auth()
 def profile():
+    """Return or update profile of authenticated user."""
     u = User.query.get_or_404(request.user["uid"])
     if request.method == "GET":
-        return jsonify({"id": u.id, "username": u.username, "timezone": u.timezone})
-    data = request.json
-    if "timezone" in data:
-        u.timezone = data["timezone"]
-    if "username" in data:
-        u.username = data["username"]
-    db.session.commit()
-    return "", 204
-
-
-@app.route("/api/profile", methods=["GET", "PATCH"])
-@require_auth()
-def profile():
-    u = User.query.get_or_404(request.user["uid"])
-    if request.method == "GET":
-        return jsonify({"id": u.id, "username": u.username, "timezone": u.timezone})
-    data = request.json
+        return jsonify(
+            {
+                "id": u.id,
+                "username": u.username,
+                "email": u.email,
+                "role": u.role,
+                "timezone": u.timezone,
+            }
+        )
+    data = request.json or {}
     if "timezone" in data:
         u.timezone = data["timezone"]
     if "username" in data:

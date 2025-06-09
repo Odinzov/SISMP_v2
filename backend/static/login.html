@@ -98,11 +98,11 @@
 
         <!-- Login -->
         <form id="loginForm">
-          <label>Логин</label>
+          <label>Логин или Email</label>
           <input
             id="loginUser"
             type="text"
-            placeholder="Введите логин"
+            placeholder="Введите логин или email"
             style="
               width: 100%;
               padding: 0.6rem;
@@ -134,6 +134,18 @@
             id="regUser"
             type="text"
             placeholder="Придумайте логин"
+            style="
+              width: 100%;
+              padding: 0.6rem;
+              margin: 0.3rem 0 1rem;
+              box-sizing: border-box;
+            "
+          />
+          <label>Email</label>
+          <input
+            id="regEmail"
+            type="email"
+            placeholder="Введите email"
             style="
               width: 100%;
               padding: 0.6rem;
@@ -215,10 +227,10 @@
 <script>
 const API="/api", tokenKey="pyToken";
 regBtn.onclick=()=>{
-  const u=regUser.value.trim(),p=regPass.value.trim();
-  if(!u||!p) return alert("Заполните поля");
+  const u=regUser.value.trim(),e=regEmail.value.trim(),p=regPass.value.trim();
+  if(!u||!p||!e) return alert("Заполните поля");
   fetch(API+"/register",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({username:u,password:p})})
+    body:JSON.stringify({username:u,email:e,password:p})})
     .then(r=>r.json()).then(d=>{
       localStorage.setItem(tokenKey,d.token);location="dashboard.html";
     });
