@@ -14,3 +14,12 @@ class Result(db.Model):
     score     = db.Column(db.Integer)
     total     = db.Column(db.Integer)
     passed_at = db.Column(db.DateTime)
+
+
+class Task(db.Model):
+    id       = db.Column(db.Integer, primary_key=True)
+    name     = db.Column(db.String(120), nullable=False)
+    effort   = db.Column(db.Integer)  # hours
+    deadline = db.Column(db.DateTime)
+    user_id  = db.Column(db.Integer, db.ForeignKey('user.id'))
+    status   = db.Column(db.String(20), default='open')  # open|in_progress|done

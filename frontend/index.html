@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Учебник по Python – Главная</title>
+    <title>Функциональная спецификация – Главная</title>
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -47,7 +47,7 @@
   <body>
     <!-- === Header === -->
     <header class="header">
-      <span class="header-text">Учебник по Python</span>
+      <span class="header-text">Функциональная спецификация</span>
 
       <!-- Бургер‑меню -->
       <div class="dropdown">
@@ -59,6 +59,8 @@
         <nav id="dropdownMenu" class="dropdown-content">
           <a href="index.html" class="dropdown-item">Главная</a>
           <a href="account.html" class="dropdown-item">Аккаунт</a>
+          <a href="tasks.html" class="dropdown-item">Задачи</a>
+          <a href="schedule.html" class="dropdown-item">Календарь</a>
         </nav>
       </div>
     </header>
@@ -67,52 +69,79 @@
     <main class="main">
       <!-- Welcome -->
       <section id="welcomeSection" class="info-section">
-        <h2>Добро пожаловать на наш сайт!</h2>
+        <h2>Добро пожаловать!</h2>
         <p>
-          Этот сайт предназначен для изучения языка программирования Python.
-          Здесь вы найдёте теоретические материалы и практические задания для
-          проверки ваших знаний.
+          На этой странице представлена краткая функциональная спецификация
+          учебного сервиса управления проектными заданиями. Ниже перечислены
+          ключевые подсистемы и их минимальные функции.
         </p>
       </section>
 
-      <!-- Courses list -->
-      <section id="coursesSection" class="info-section">
-        <h2>Разделы обучения</h2>
+      <section id="specSection" class="info-section">
+        <h2>Функциональная спецификация</h2>
 
-        <div class="course-block">
-          <article class="course">
-            <h3>Введение в Python</h3>
-            <p>Узнайте об истории и философии языка Python.</p>
-            <a href="theory_introduction.html">Начать изучение</a>
-          </article>
-
-          <article class="course">
-            <h3>Основы синтаксиса Python</h3>
-            <p>Изучите переменные, типы данных и основные операторы.</p>
-            <a href="theory_syntax.html">Начать изучение</a>
-          </article>
-
-          <article class="course">
-            <h3>Условные операторы и циклы</h3>
-            <p>
-              Научитесь писать программы, которые могут принимать решения и
-              повторять действия.
-            </p>
-            <a href="theory_conditions_loops.html">Начать изучение</a>
-          </article>
-
-          <article class="course">
-            <h3>Функции и модули</h3>
-            <p>Узнайте, как создавать функции и подключать модули.</p>
-            <a href="theory_functions.html">Начать изучение</a>
-          </article>
-
-          <article class="course">
-            <h3>Контрольная работа</h3>
-            <p>Проверьте свои знания, выполнив контрольную работу.</p>
-            <a href="test.html">Приступить</a>
-          </article>
-        </div>
+        <table style="width:100%; border-collapse: collapse;">
+          <thead style="background:#f0f6ff">
+            <tr>
+              <th style="padding:8px; border:1px solid #ddd">№</th>
+              <th style="padding:8px; border:1px solid #ddd">Подсистема</th>
+              <th style="padding:8px; border:1px solid #ddd">Назначение</th>
+              <th style="padding:8px; border:1px solid #ddd">Ключевые функции</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px; border:1px solid #ddd">1</td>
+              <td style="padding:8px; border:1px solid #ddd">Реестр трудовых заданий</td>
+              <td style="padding:8px; border:1px solid #ddd">Централизованное хранение данных о работах проекта</td>
+              <td style="padding:8px; border:1px solid #ddd">
+                • отображение атрибутов: ИД, наименование, трудоёмкость (ч),
+                дедлайн, исполнитель, статус<br />
+                • операции Create/Read/Update (удаление недоступно на этапе MVP)
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ddd">2</td>
+              <td style="padding:8px; border:1px solid #ddd">Механизм добровольного закрепления</td>
+              <td style="padding:8px; border:1px solid #ddd">Реализация принципа «self-assignment»</td>
+              <td style="padding:8px; border:1px solid #ddd">
+                • транзакция «Взять → закрепить» атомарно блокирует объект<br />
+                • операция «Отдать» возвращает задачу в общий пул<br />
+                • обработка коллизий блокировкой ID
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ddd">3</td>
+              <td style="padding:8px; border:1px solid #ddd">Календарь оперативного планирования</td>
+              <td style="padding:8px; border:1px solid #ddd">Фиксация интервалов занятости студента</td>
+              <td style="padding:8px; border:1px solid #ddd">
+                • недельная матрица 7 × N (шаг 1–2 ч)<br />
+                • добавление/удаление слота drag&amp;drop<br />
+                • хранение модели в localStorage
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ddd">4</td>
+              <td style="padding:8px; border:1px solid #ddd">Контур прогнозно-диагностический</td>
+              <td style="padding:8px; border:1px solid #ddd">Автоматическая оценка риска</td>
+              <td style="padding:8px; border:1px solid #ddd">
+                • расчёт остатка R = ∑ слоты – трудоёмкость<br />
+                • жёлтый индикатор, если R &lt; 0 и дедлайн &gt; 24 ч<br />
+                • красный индикатор, если текущая дата ≥ дедлайна
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ddd">5</td>
+              <td style="padding:8px; border:1px solid #ddd">Панель тимлида</td>
+              <td style="padding:8px; border:1px solid #ddd">Сводная визуализация статусов</td>
+              <td style="padding:8px; border:1px solid #ddd">
+                • переключатель «Student ↔ TL»<br />
+                • фильтр «показать только задачи с риском»<br />
+                • агрегированные метрики: N_жёлт, N_красн, N_всего
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </section>
     </main>
 
