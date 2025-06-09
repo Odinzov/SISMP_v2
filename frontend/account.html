@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Учебник по Python – Личный кабинет</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- dropdown styles to match index -->
+    <style>
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+      .dropdown-content.show {
+        display: block;
+      }
+      .dropdown-content .dropdown-item {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      .dropdown-content .dropdown-item:hover {
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== Header ===== -->
+    <header class="header">
+      <span class="header-text">Учебник по Python</span>
+      <div class="dropdown">
+        <i
+          id="menuToggle"
+          class="fas fa-list"
+          style="font-size: 2rem; cursor: pointer"
+        ></i>
+        <nav id="dropdownMenu" class="dropdown-content">
+          <a href="index.html" class="dropdown-item">Главная</a>
+          <span id="logoutBtn" class="dropdown-item">Выйти</span>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ===== Main ===== -->
+    <main class="main">
+      <section
+        class="info-section"
+        style="
+          max-width: 560px;
+          width: 100%;
+          margin: auto;
+          padding: 1.75rem 1.5rem 2rem;
+          box-sizing: border-box;
+        "
+      >
+        <h2 style="text-align: center; margin-bottom: 1.4rem">
+          Личный кабинет: <span id="dashName"></span>
+        </h2>
+        <table style="width: 100%; border-collapse: collapse">
+          <thead style="background: #f0f6ff">
+            <tr>
+              <th style="padding: 10px; text-align: left">Тест</th>
+              <th style="padding: 10px; text-align: left">Баллы</th>
+            </tr>
+          </thead>
+          <tbody id="dashBody"></tbody>
+        </table>
+        <div
+          class="buttons"
+          style="justify-content: center; margin-top: 1.5rem"
+        >
+          <button id="logoutBtn2" class="btn">Выйти из аккаунта</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // ===== Проверяем токен =====
+      const tokenKey = "pyToken";
+      const user = localStorage.getItem(tokenKey);
+      if (!user) {
+        location.replace("login.html");
+      }
+
+      // ===== Меню =====
+      const menuToggle = document.getElementById("menuToggle");
+      const dropdownMenu = document.getElementById("dropdownMenu");
+      menuToggle.onclick = () => dropdownMenu.classList.toggle("show");
+      window.onclick = (e) => {
+        if (
+          !e.target.matches("#menuToggle") &&
+          !dropdownMenu.contains(e.target)
+        ) {
+          dropdownMenu.classList.remove("show");
+        }
+      };
+
+      // ===== Заполняем данные =====
+      document.getElementById("dashName").textContent = user;
+      const results = JSON.parse(localStorage.getItem("pyResults") || "[]");
+      const tbody = document.getElementById("dashBody");
+      if (results.length) {
+        results.forEach((r) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td style='padding:8px 10px;'>${r.slug}</td><td style='padding:8px 10px;'>${r.score}/${r.total}</td>`;
+          tbody.appendChild(tr);
+        });
+      } else {
+        const tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td colspan='2' style='padding:10px;'>Нет результатов</td>";
+        tbody.appendChild(tr);
+      }
+
+      // ===== Выход =====
+      const doLogout = () => {
+        localStorage.removeItem(tokenKey);
+        location.replace("login.html");
+      };
+      document.getElementById("logoutBtn").onclick = doLogout;
+      const logout2 = document.getElementById("logoutBtn2");
+      if (logout2) logout2.onclick = doLogout;
+    </script>
+  </body>
+</html>

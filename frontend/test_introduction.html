@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тест – Введение в Python</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Минимальные inline‑стили для выпадающего меню (как в main.html) -->
+    <style>
+      .correct {
+        background: #c8e6c9;
+      }
+      .incorrect {
+        background: #ffcdd2;
+      }
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+      .dropdown-content.show {
+        display: block;
+      }
+      .dropdown-content .dropdown-item {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      .dropdown-content .dropdown-item:hover {
+        background-color: #f1f1f1;
+      }
+      .input-field.selected {
+        background-color: #e0e0e0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- === Header === -->
+    <header class="header">
+      <label class="header-text">Учебник по Python</label>
+      <div class="dropdown">
+        <i
+          id="menuToggle"
+          class="fas fa-list"
+          style="font-size: 2rem; cursor: pointer"
+        ></i>
+        <nav id="dropdownMenu" class="dropdown-content">
+          <a href="index.html" class="dropdown-item">Вернуться на главную</a>
+          <a href="account.html" class="dropdown-item">Аккаунт</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- === MAIN === -->
+    <main class="main">
+      <div id="testSection">
+        <h2>Тест по теме "Введение в Python"</h2>
+
+        <!-- Вопрос 1 -->
+        <div class="question" data-correct-answer="C">
+          <div class="question-number"><label>Вопрос №1:</label></div>
+          <div class="question-text">
+            Как называется язык программирования, который мы изучаем?
+          </div>
+          <div class="question-checkbox">
+            <div class="input-field">
+              <input type="radio" name="q1" value="A" /><label>A) Java</label>
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q1" value="B" /><label>B) C++</label>
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q1" value="C" /><label>C) Python</label>
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q1" value="D" /><label>D) Ruby</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Вопрос 2 -->
+        <div class="question" data-correct-answer="B">
+          <div class="question-number"><label>Вопрос №2:</label></div>
+          <div class="question-text">
+            Кто создал язык программирования Python?
+          </div>
+          <div class="question-checkbox">
+            <div class="input-field">
+              <input type="radio" name="q2" value="A" /><label
+                >A) Джеймс Гослинг</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q2" value="B" /><label
+                >B) Гвидо ван Россум</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q2" value="C" /><label
+                >C) Ларри Уолл</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q2" value="D" /><label
+                >D) Бьёрн Страуструп</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Вопрос 3 -->
+        <div class="question" data-correct-answer="A">
+          <div class="question-number"><label>Вопрос №3:</label></div>
+          <div class="question-text">Что такое программирование?</div>
+          <div class="question-checkbox">
+            <div class="input-field">
+              <input type="radio" name="q3" value="A" /><label
+                >A) Способ объяснить компьютеру, что ему нужно делать</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q3" value="B" /><label
+                >B) Игра на компьютере</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q3" value="C" /><label
+                >C) Рисование на компьютере</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q3" value="D" /><label
+                >D) Чтение книг на компьютере</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Вопрос 4 -->
+        <div class="question" data-correct-answer="B">
+          <div class="question-number"><label>Вопрос №4:</label></div>
+          <div class="question-text">Зачем нужно изучать программирование?</div>
+          <div class="question-checkbox">
+            <div class="input-field">
+              <input type="radio" name="q4" value="A" /><label
+                >A) Чтобы стать сильнее</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q4" value="B" /><label
+                >B) Чтобы развивать логическое мышление и креативность</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q4" value="C" /><label
+                >C) Чтобы научиться рисовать</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q4" value="D" /><label
+                >D) Чтобы научиться петь</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Вопрос 5 -->
+        <div class="question" data-correct-answer="A">
+          <div class="question-number"><label>Вопрос №5:</label></div>
+          <div class="question-text">
+            Что является преимуществами языка Python?
+          </div>
+          <div class="question-checkbox">
+            <div class="input-field">
+              <input type="radio" name="q5" value="A" /><label
+                >A) Простота и читаемость кода</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q5" value="B" /><label
+                >B) Высокая скорость выполнения</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q5" value="C" /><label
+                >C) Сложность в изучении</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q5" value="D" /><label
+                >D) Отсутствие библиотек</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Вопрос 6 -->
+        <div class="question" data-correct-answer="B">
+          <div class="question-number"><label>Вопрос №6:</label></div>
+          <div class="question-text">Недостатками языка Python являются?</div>
+          <div class="question-checkbox">
+            <div class="input-field">
+              <input type="radio" name="q6" value="A" /><label
+                >A) Простота и читаемость кода</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q6" value="B" /><label
+                >B) Низкая скорость выполнения</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q6" value="C" /><label
+                >C) Сложность в изучении</label
+              >
+            </div>
+            <div class="input-field">
+              <input type="radio" name="q6" value="D" /><label
+                >D) Отсутствие библиотек</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Кнопки управления (логика будет подключена позже отдельным JS) -->
+        <div class="buttons">
+          <button type="button" class="btn" id="checkAnswersBtn">
+            Проверить ответы
+          </button>
+        </div>
+      </div>
+      <div id="result" style="margin-top: 20px; font-weight: bold"></div>
+    </main>
+
+    <!-- Скрипт меню (оставляем минимальный) -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const menuToggle = document.getElementById("menuToggle");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        menuToggle.onclick = () => dropdownMenu.classList.toggle("show");
+        window.onclick = (e) => {
+          if (
+            !e.target.matches("#menuToggle") &&
+            !dropdownMenu.contains(e.target)
+          ) {
+            dropdownMenu.classList.remove("show");
+          }
+        };
+      });
+    </script>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>

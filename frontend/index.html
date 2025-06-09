@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Учебник по Python – Главная</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <!-- External styles (оставил подключение к вашему styles.css) -->
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Минимальные inline‑стили для выпадающего меню -->
+    <style>
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+      .dropdown-content.show {
+        display: block;
+      }
+      .dropdown-content .dropdown-item {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      .dropdown-content .dropdown-item:hover {
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- === Header === -->
+    <header class="header">
+      <span class="header-text">Учебник по Python</span>
+
+      <!-- Бургер‑меню -->
+      <div class="dropdown">
+        <i
+          id="menuToggle"
+          class="fas fa-list"
+          style="font-size: 2rem; cursor: pointer"
+        ></i>
+        <nav id="dropdownMenu" class="dropdown-content">
+          <a href="index.html" class="dropdown-item">Главная</a>
+          <a href="account.html" class="dropdown-item">Аккаунт</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- === Main content === -->
+    <main class="main">
+      <!-- Welcome -->
+      <section id="welcomeSection" class="info-section">
+        <h2>Добро пожаловать на наш сайт!</h2>
+        <p>
+          Этот сайт предназначен для изучения языка программирования Python.
+          Здесь вы найдёте теоретические материалы и практические задания для
+          проверки ваших знаний.
+        </p>
+      </section>
+
+      <!-- Courses list -->
+      <section id="coursesSection" class="info-section">
+        <h2>Разделы обучения</h2>
+
+        <div class="course-block">
+          <article class="course">
+            <h3>Введение в Python</h3>
+            <p>Узнайте об истории и философии языка Python.</p>
+            <a href="theory_introduction.html">Начать изучение</a>
+          </article>
+
+          <article class="course">
+            <h3>Основы синтаксиса Python</h3>
+            <p>Изучите переменные, типы данных и основные операторы.</p>
+            <a href="theory_syntax.html">Начать изучение</a>
+          </article>
+
+          <article class="course">
+            <h3>Условные операторы и циклы</h3>
+            <p>
+              Научитесь писать программы, которые могут принимать решения и
+              повторять действия.
+            </p>
+            <a href="theory_conditions_loops.html">Начать изучение</a>
+          </article>
+
+          <article class="course">
+            <h3>Функции и модули</h3>
+            <p>Узнайте, как создавать функции и подключать модули.</p>
+            <a href="theory_functions.html">Начать изучение</a>
+          </article>
+
+          <article class="course">
+            <h3>Контрольная работа</h3>
+            <p>Проверьте свои знания, выполнив контрольную работу.</p>
+            <a href="test.html">Приступить</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- === Minimal JS: только логика меню === -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const menuToggle = document.getElementById("menuToggle");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+
+        menuToggle.onclick = () => dropdownMenu.classList.toggle("show");
+
+        window.onclick = (event) => {
+          if (
+            !event.target.matches("#menuToggle") &&
+            !dropdownMenu.contains(event.target)
+          ) {
+            dropdownMenu.classList.remove("show");
+          }
+        };
+      });
+    </script>
+  </body>
+</html>

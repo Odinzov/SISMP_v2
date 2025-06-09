@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Учебник по Python – Вход / Регистрация</title>
+    <!-- Подключаем общие стили и иконки -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Стили выпадающего меню (копия из index.html) -->
+    <style>
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+      .dropdown-content.show {
+        display: block;
+      }
+      .dropdown-content .dropdown-item {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      .dropdown-content .dropdown-item:hover {
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- === Header (полная копия) === -->
+    <header class="header">
+      <span class="header-text">Учебник по Python</span>
+      <div class="dropdown">
+        <i
+          id="menuToggle"
+          class="fas fa-list"
+          style="font-size: 2rem; cursor: pointer"
+        ></i>
+        <nav id="dropdownMenu" class="dropdown-content">
+          <a href="index.html" class="dropdown-item">Главная</a>
+          <a href="account.html" class="dropdown-item">Аккаунт</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ===== Main ===== -->
+    <main class="main">
+      <section
+        class="info-section"
+        style="
+          max-width: 420px;
+          width: 100%;
+          margin: auto;
+          padding: 1.75rem 1.5rem 2rem;
+          box-sizing: border-box;
+        "
+      >
+        <h2 style="text-align: center; margin-bottom: 1.3rem">
+          Добро пожаловать!
+        </h2>
+        <!-- Вкладки -->
+        <div
+          class="buttons"
+          style="justify-content: center; gap: 0.8rem; margin-bottom: 1.6rem"
+        >
+          <button id="loginTab" class="btn" style="min-width: 120px">
+            Вход
+          </button>
+          <button
+            id="regTab"
+            class="btn"
+            style="min-width: 120px; background: #d9e2ef; color: #1e88e5"
+          >
+            Регистрация
+          </button>
+        </div>
+
+        <!-- Login -->
+        <form id="loginForm">
+          <label>Логин</label>
+          <input
+            id="loginUser"
+            type="text"
+            placeholder="Введите логин"
+            style="
+              width: 100%;
+              padding: 0.6rem;
+              margin: 0.3rem 0 1rem;
+              box-sizing: border-box;
+            "
+          />
+          <label>Пароль</label>
+          <input
+            id="loginPass"
+            type="password"
+            placeholder="Введите пароль"
+            style="
+              width: 100%;
+              padding: 0.6rem;
+              margin: 0.3rem 0 1.2rem;
+              box-sizing: border-box;
+            "
+          />
+          <div class="buttons" style="justify-content: center">
+            <button type="button" class="btn" id="loginBtn">Войти</button>
+          </div>
+        </form>
+
+        <!-- Register -->
+        <form id="regForm" style="display: none">
+          <label>Логин</label>
+          <input
+            id="regUser"
+            type="text"
+            placeholder="Придумайте логин"
+            style="
+              width: 100%;
+              padding: 0.6rem;
+              margin: 0.3rem 0 1rem;
+              box-sizing: border-box;
+            "
+          />
+          <label>Пароль</label>
+          <input
+            id="regPass"
+            type="password"
+            placeholder="Придумайте пароль"
+            style="
+              width: 100%;
+              padding: 0.6rem;
+              margin: 0.3rem 0 1.2rem;
+              box-sizing: border-box;
+            "
+          />
+          <div class="buttons" style="justify-content: center">
+            <button type="button" class="btn" id="regBtn">
+              Зарегистрироваться
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- === JS: логика меню + вкладки + эмуляция логина === -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- Бургер меню ---
+        const menuToggle = document.getElementById("menuToggle");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        menuToggle.onclick = () => dropdownMenu.classList.toggle("show");
+        window.onclick = (e) => {
+          if (
+            !e.target.matches("#menuToggle") &&
+            !dropdownMenu.contains(e.target)
+          ) {
+            dropdownMenu.classList.remove("show");
+          }
+        };
+
+        // --- Редирект, если уже вошёл ---
+        const tokenKey = "pyToken";
+        if (localStorage.getItem(tokenKey)) location.replace("account.html");
+
+        // --- Tabs ---
+        const activeClr = "#1e88e5",
+          inactiveClr = "#d9e2ef",
+          inactiveText = "#1e88e5",
+          white = "#fff";
+        const loginTab = document.getElementById("loginTab");
+        const regTab = document.getElementById("regTab");
+        const loginForm = document.getElementById("loginForm");
+        const regForm = document.getElementById("regForm");
+        loginTab.onclick = () => {
+          loginForm.style.display = "block";
+          regForm.style.display = "none";
+          loginTab.style.background = activeClr;
+          loginTab.style.color = white;
+          regTab.style.background = inactiveClr;
+          regTab.style.color = inactiveText;
+        };
+        regTab.onclick = () => {
+          regForm.style.display = "block";
+          loginForm.style.display = "none";
+          regTab.style.background = activeClr;
+          regTab.style.color = white;
+          loginTab.style.background = inactiveClr;
+          loginTab.style.color = inactiveText;
+        };
+
+        // --- Simple emulation ---
+        document.getElementById("loginBtn").onclick = () => {
+          const u = loginUser.value.trim(),
+            p = loginPass.value.trim();
+          if (!u || !p) return alert("Заполните поля");
+          localStorage.setItem(tokenKey, u);
+          location.replace("account.html");
+        };
+        document.getElementById("regBtn").onclick = () => {
+          const u = regUser.value.trim(),
+            p = regPass.value.trim();
+          if (!u || !p) return alert("Заполните поля");
+          localStorage.setItem(tokenKey, u);
+          location.replace("account.html");
+        };
+      });
+    </script>
+
+<!-- START auth patch -->
+<script>
+const API="/api", tokenKey="pyToken";
+regBtn.onclick=()=>{
+  const u=regUser.value.trim(),p=regPass.value.trim();
+  if(!u||!p) return alert("Заполните поля");
+  fetch(API+"/register",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({username:u,password:p})})
+    .then(r=>r.json()).then(d=>{
+      localStorage.setItem(tokenKey,d.token);location="account.html";
+    });
+};
+loginBtn.onclick=()=>{
+  const u=loginUser.value.trim(),p=loginPass.value.trim();
+  if(!u||!p) return alert("Заполните поля");
+  fetch(API+"/login",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({username:u,password:p})})
+    .then(r=>{if(!r.ok)throw 0;return r.json();})
+    .then(d=>{
+      localStorage.setItem(tokenKey,d.token);location="account.html";
+    })
+    .catch(()=>alert("Ошибка входа"));
+};
+</script>
+<!-- END auth patch -->
+  </body>
+
+  <script>
+    const USERS_KEY = "users";
+    function loadUsers() {
+      return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+    }
+    function saveUsers(x) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(x));
+    }
+
+    regBtn.onclick = () => {
+      const u = regUser.value.trim(),
+        p = regPass.value.trim();
+      if (!u || !p) return alert("заполните");
+      const users = loadUsers();
+      if (users.find((o) => o.u === u)) return alert("логин занят");
+      users.push({ u, p, role: "student" });
+      saveUsers(users);
+      localStorage.setItem("pyToken", u); // «токен» = логин
+      location.replace("account.html");
+    };
+
+    loginBtn.onclick = () => {
+      const u = loginUser.value.trim(),
+        p = loginPass.value.trim();
+      const user = loadUsers().find((o) => o.u === u && o.p === p);
+      if (!user) return alert("ошибка");
+      localStorage.setItem("pyToken", u);
+      location.replace("account.html");
+    };
+  </script>
+</html>

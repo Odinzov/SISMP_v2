@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Учебник по Python – Условные операторы и циклы</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+      .dropdown-content.show {
+        display: block;
+      }
+      .dropdown-item {
+        color: #000;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      .dropdown-item:hover {
+        background: #f1f1f1;
+      }
+      .btn {
+        display: inline-block;
+        padding: 8px 14px;
+        background: #1e88e5;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .btn:hover {
+        background: #1565c0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <span class="header-text">Учебник по Python</span>
+      <div class="dropdown">
+        <i
+          id="menuToggle"
+          class="fas fa-list"
+          style="font-size: 2rem; cursor: pointer"
+        ></i>
+        <nav id="dropdownMenu" class="dropdown-content">
+          <a href="index.html" class="dropdown-item">Главная</a>
+          <a href="account.html" class="dropdown-item">Аккаунт</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="info-section">
+        <h2>Условные операторы и циклы</h2>
+        <p>Условные операторы:</p>
+        <ul>
+          <li>if: если условие истинно</li>
+          <li>elif: если предыдущее условие ложно, но текущее истинно</li>
+          <li>else: если все предыдущие условия ложны</li>
+        </ul>
+        <p>Циклы:</p>
+        <ul>
+          <li>for: цикл с определенным количеством итераций</li>
+          <li>while: цикл с неопределенным количеством итераций</li>
+        </ul>
+      </section>
+
+      <div class="buttons" style="margin-top: 20px">
+        <a class="btn" href="test_conditions_loops.html">Начать тест</a>
+        <a class="btn" href="index.html" style="margin-left: 10px"
+          >Вернуться к разделам</a
+        >
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const menuToggle = document.getElementById("menuToggle");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        menuToggle.onclick = () => dropdownMenu.classList.toggle("show");
+        window.onclick = (e) => {
+          if (
+            !e.target.matches("#menuToggle") &&
+            !dropdownMenu.contains(e.target)
+          )
+            dropdownMenu.classList.remove("show");
+        };
+      });
+    </script>
+  </body>
+</html>
