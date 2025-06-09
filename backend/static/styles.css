@@ -264,3 +264,7 @@ h3 {
 .input-field.incorrect {
   background-color: var(--light-incorrect-color);
 }
+
+.alert-row{
+  background-color:#fff3cd;
+}

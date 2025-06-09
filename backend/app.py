@@ -4,6 +4,8 @@ import os
 import csv
 import io
 from pathlib import Path
+from queue import Queue
+import json
 
 import jwt  # PyJWT
 from flask import Flask, jsonify, request, Response
@@ -35,6 +37,14 @@ with app.app_context():
 app.register_blueprint(auth_bp, url_prefix="/api")
 
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret")  # never keep this in code for prod!
+
+# Subscribers for Server-Sent Events. Each connection adds a Queue to this list.
+subscribers: list[Queue] = []
+
+def publish_event(data: dict) -> None:
+    """Send event to all subscribers."""
+    for q in list(subscribers):
+        q.put(data)
 
 # ── Frontend entry ──────────────────────────────────────────────────────────────
 @app.route("/")
@@ -225,23 +235,21 @@ def task_detail(tid):
         if t.progress >= 100:
             t.status = "pending_review"
         now = datetime.datetime.utcnow()
+        new_event = None
         if t.deadline and t.progress < 100 and t.deadline < now:
-            db.session.add(
-                RiskEvent(
-                    task_id=tid,
-                    message="Просрочка",
-                    created_at=now,
-                )
-            )
+            new_event = RiskEvent(task_id=tid, message="Просрочка", created_at=now)
+            db.session.add(new_event)
         elif t.deadline and t.progress < 50 and (t.deadline - now).days <= 2:
-            db.session.add(
-                RiskEvent(
-                    task_id=tid,
-                    message="Риск задержки",
-                    created_at=now,
-                )
-            )
+            new_event = RiskEvent(task_id=tid, message="Риск задержки", created_at=now)
+            db.session.add(new_event)
     db.session.commit()
+    if new_event:
+        publish_event({
+            "id": new_event.id,
+            "task": new_event.task_id,
+            "message": new_event.message,
+            "date": new_event.created_at.isoformat(),
+        })
     return "", 204
 
 
@@ -289,6 +297,33 @@ def risk_events():
             for r in rows
         ]
     )
+
+
+@app.route("/api/risk-stream")
+def risk_stream():
+    """Server-Sent Events endpoint broadcasting new risk events."""
+    token = request.args.get("token")
+    if not token:
+        return "token required", 401
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    except jwt.InvalidTokenError:
+        return "invalid token", 401
+    if payload.get("role") not in ("teacher", "admin"):
+        return "forbidden", 403
+
+    q: Queue = Queue()
+    subscribers.append(q)
+
+    def gen():
+        try:
+            while True:
+                data = q.get()
+                yield f"data: {json.dumps(data)}\n\n"
+        finally:
+            subscribers.remove(q)
+
+    return Response(gen(), mimetype="text/event-stream", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 @app.route("/api/reports")
@@ -355,7 +390,22 @@ def task_detail(tid):
         t.progress = int(d["progress"])
         if t.progress >= 100:
             t.status = "pending_review"
+        now = datetime.datetime.utcnow()
+        new_event = None
+        if t.deadline and t.progress < 100 and t.deadline < now:
+            new_event = RiskEvent(task_id=tid, message="Просрочка", created_at=now)
+            db.session.add(new_event)
+        elif t.deadline and t.progress < 50 and (t.deadline - now).days <= 2:
+            new_event = RiskEvent(task_id=tid, message="Риск задержки", created_at=now)
+            db.session.add(new_event)
     db.session.commit()
+    if new_event:
+        publish_event({
+            "id": new_event.id,
+            "task": new_event.task_id,
+            "message": new_event.message,
+            "date": new_event.created_at.isoformat(),
+        })
     return "", 204
 
 
