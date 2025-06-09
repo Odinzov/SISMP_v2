@@ -223,6 +223,7 @@ def task_detail(tid):
             return jsonify({"msg": "forbidden"}), 403
         t.progress = int(d["progress"])
         if t.progress >= 100:
+            t.progress = 100
             t.status = "pending_review"
         now = datetime.datetime.utcnow()
         if t.deadline and t.progress < 100 and t.deadline < now:
@@ -354,6 +355,7 @@ def task_detail(tid):
             return jsonify({"msg": "forbidden"}), 403
         t.progress = int(d["progress"])
         if t.progress >= 100:
+            t.progress = 100
             t.status = "pending_review"
     db.session.commit()
     return "", 204
