@@ -43,6 +43,7 @@
 </main>
 <script src="scripts.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 <script>
 const API='/api', tokenKey='pyToken';
 function params(){
@@ -68,12 +69,12 @@ function downloadPdf(){
     .then(r=>r.json()).then(data=>{
       const {jsPDF}=window.jspdf;
       const doc=new jsPDF();
-      doc.text('Отчёт',10,10);
-      let y=20;
+      doc.setFontSize(16);
+      doc.text('Отчёт',14,16);
       if(Array.isArray(data)&&data.length){
-        const keys=Object.keys(data[0]);
-        doc.text(keys.join(' | '),10,y); y+=10;
-        data.forEach(row=>{doc.text(keys.map(k=>String(row[k])).join(' | '),10,y); y+=10;});
+        const headers=Object.keys(data[0]);
+        const rows=data.map(row=>headers.map(k=>String(row[k]??'')));
+        doc.autoTable({head:[headers],body:rows,startY:20,styles:{fontSize:10}});
       }
       doc.save('report.pdf');
     });

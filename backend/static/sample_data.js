@@ -3,7 +3,10 @@ const SAMPLE_TASKS = [
   // "assignee" uses numeric identifiers to mirror real API data
   {id: 1, name: 'Обновление календаря', effort: 4, deadline: '2025-06-20', assignee: 2, status: 'в процессе', progress: 40, priority: 'A'}, // alice
   {id: 2, name: 'Написать отчёт', effort: 2, deadline: '2025-06-18', assignee: 3, status: 'выполнено', progress: 100, priority: 'B'}, // bob
-  {id: 3, name: 'Обсудить требования', effort: 1, deadline: '2025-06-22', assignee: null, status: 'открыта', progress: 0, priority: 'C'}
+  {id: 3, name: 'Обсудить требования', effort: 1, deadline: '2025-06-22', assignee: null, status: 'открыта', progress: 0, priority: 'C'},
+  {id: 4, name: 'Провести тестирование', effort: 3, deadline: '2025-06-25', assignee: 1, status: 'в процессе', progress: 20, priority: 'A'},
+  {id: 5, name: 'Подготовить презентацию', effort: 2, deadline: '2025-06-19', assignee: 2, status: 'выполнено', progress: 100, priority: 'B'},
+  {id: 6, name: 'Создать прототип', effort: 5, deadline: '2025-06-30', assignee: 3, status: 'открыта', progress: 0, priority: 'A'}
 ];
 
 const SAMPLE_RISKS = [
