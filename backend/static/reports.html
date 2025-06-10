@@ -25,19 +25,20 @@
   </div>
 </header>
 <main class="main">
-  <section class="info-section" style="max-width:400px;margin:auto">
+  <section class="info-section narrow">
+    <h2 class="text-center" style="margin-top:0">Сформировать отчёт</h2>
     <label>С</label>
-    <input id="from" type="date" style="width:100%">
+    <input id="from" type="date" class="form-input">
     <label>По</label>
-    <input id="to" type="date" style="width:100%">
-    <div style="margin-top:1rem">
-      <label><input type="checkbox" id="kindGeneral" checked> Общее</label><br>
-      <label><input type="checkbox" id="kindByUser"> По участникам</label><br>
+    <input id="to" type="date" class="form-input">
+    <div class="checkbox-list mb-1 mt-1">
+      <label><input type="checkbox" id="kindGeneral" checked> Общее</label>
+      <label><input type="checkbox" id="kindByUser"> По участникам</label>
       <label><input type="checkbox" id="kindOverdue"> Просрочки</label>
     </div>
-    <div class="buttons" style="justify-content:center;margin-top:1rem;gap:.5rem">
-      <button id="csvBtn" class="btn">CSV</button>
-      <button id="pdfBtn" class="btn">PDF</button>
+    <div class="buttons center" style="gap:.5rem">
+      <button id="csvBtn" class="btn" style="min-width:110px">CSV</button>
+      <button id="pdfBtn" class="btn" style="min-width:110px">PDF</button>
     </div>
   </section>
 </main>
