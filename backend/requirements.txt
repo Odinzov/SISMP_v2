@@ -5,3 +5,4 @@ pyjwt[crypto]
 passlib[bcrypt]
 bcrypt<4.1
 python-dotenv
+fpdf==1.7.2

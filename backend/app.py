@@ -7,6 +7,8 @@ from pathlib import Path
 from queue import Queue
 import json
 
+from fpdf import FPDF
+
 import jwt  # PyJWT
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
@@ -340,7 +342,7 @@ def risk_stream():
 @require_auth(role="teacher|admin")
 def reports():
     kind = request.args.get("kind", "general")
-    fmt = request.args.get("fmt", "csv")  # csv or json
+    fmt = request.args.get("fmt", "csv")  # csv|json|pdf
 
     q = Task.query
     from_arg = request.args.get("from")
@@ -370,6 +372,28 @@ def reports():
         result = list(data.values())
         if fmt == "json":
             return jsonify(result)
+        if fmt == "pdf":
+            headers = ["user", "total", "done"]
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=12)
+            col_w = [40, 30, 30]
+            for h, w in zip(headers, col_w):
+                pdf.cell(w, 10, h, border=1)
+            pdf.ln()
+            for r in result:
+                pdf.cell(col_w[0], 10, str(r["user"]), border=1)
+                pdf.cell(col_w[1], 10, str(r["total"]), border=1)
+                pdf.cell(col_w[2], 10, str(r["done"]), border=1)
+                pdf.ln()
+            out = pdf.output(dest="S").encode("latin1")
+            return Response(
+                out,
+                headers={
+                    "Content-Type": "application/pdf",
+                    "Content-Disposition": "attachment; filename=report.pdf",
+                },
+            )
         buf = io.StringIO()
         writer = csv.writer(buf)
         writer.writerow(["user", "total", "done"])
@@ -399,6 +423,33 @@ def reports():
 
     if fmt == "json":
         return jsonify(data)
+
+    if fmt == "pdf":
+        headers = ["id", "name", "effort", "deadline", "assignee", "status", "priority"]
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        col_w = [15, 40, 20, 35, 25, 25, 20]
+        for h, w in zip(headers, col_w):
+            pdf.cell(w, 10, h, border=1)
+        pdf.ln()
+        for row in data:
+            pdf.cell(col_w[0], 10, str(row["id"]), border=1)
+            pdf.cell(col_w[1], 10, row["name"][:20], border=1)
+            pdf.cell(col_w[2], 10, str(row["effort"]), border=1)
+            pdf.cell(col_w[3], 10, row["deadline"][:16], border=1)
+            pdf.cell(col_w[4], 10, str(row["assignee"]), border=1)
+            pdf.cell(col_w[5], 10, row["status"], border=1)
+            pdf.cell(col_w[6], 10, row["priority"], border=1)
+            pdf.ln()
+        out = pdf.output(dest="S").encode("latin1")
+        return Response(
+            out,
+            headers={
+                "Content-Type": "application/pdf",
+                "Content-Disposition": "attachment; filename=report.pdf",
+            },
+        )
 
     buf = io.StringIO()
     writer = csv.writer(buf)
