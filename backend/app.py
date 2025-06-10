@@ -343,13 +343,15 @@ def reports():
     fmt = request.args.get("fmt", "csv")  # csv or json
 
     q = Task.query
-    if "from" in request.args:
+    from_arg = request.args.get("from")
+    to_arg = request.args.get("to")
+    if from_arg:
         q = q.filter(
-            Task.deadline >= datetime.datetime.fromisoformat(request.args["from"])
+            Task.deadline >= datetime.datetime.fromisoformat(from_arg)
         )
-    if "to" in request.args:
+    if to_arg:
         q = q.filter(
-            Task.deadline <= datetime.datetime.fromisoformat(request.args["to"])
+            Task.deadline <= datetime.datetime.fromisoformat(to_arg)
         )
     if kind == "overdue":
         now = datetime.datetime.utcnow()
