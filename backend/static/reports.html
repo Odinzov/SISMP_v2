@@ -52,7 +52,10 @@ function params(){
   let kind='general';
   if(document.getElementById('kindOverdue').checked) kind='overdue';
   if(document.getElementById('kindByUser').checked) kind='by_user';
-  return `from=${from}&to=${to}&kind=${kind}`;
+  const params=new URLSearchParams({kind});
+  if(from) params.append('from',from);
+  if(to) params.append('to',to);
+  return params.toString();
 }
 function download(){
   const url=`${API}/reports?${params()}`;
@@ -66,7 +69,15 @@ function download(){
 function downloadPdf(){
   const url=`${API}/reports?fmt=json&${params()}`;
   fetch(url,{headers:{'Authorization':'Bearer '+localStorage.getItem(tokenKey)}})
-    .then(r=>r.json()).then(data=>{
+    .then(async r=>{
+      if(!r.ok){
+        const err=await r.json().catch(()=>({msg:'error'}));
+        alert(err.msg||'Ошибка');
+        throw new Error('bad response');
+      }
+      return r.json();
+    })
+    .then(data=>{
       const {jsPDF}=window.jspdf;
       const doc=new jsPDF();
       doc.setFontSize(16);
